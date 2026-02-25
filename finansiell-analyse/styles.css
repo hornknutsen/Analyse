@@ -850,6 +850,60 @@ tr:hover td:first-child { background: #f5f5f5; }
 .btn-add-peer:hover { border-color: var(--brand-color); color: var(--brand-color); }
 
 /* ============================================================
+   AUTOCOMPLETE DROPDOWN
+   ============================================================ */
+.ac-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 2000;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.ac-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover, .ac-item-active { background: #eff6ff; }
+
+.ac-ticker {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: #dbeafe;
+  padding: 2px 6px;
+  border-radius: 4px;
+  min-width: 52px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.ac-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.ac-sector {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ============================================================
    SCROLLBAR
    ============================================================ */
 ::-webkit-scrollbar { width: 5px; height: 5px; }

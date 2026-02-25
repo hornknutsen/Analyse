@@ -8,6 +8,128 @@ const STORAGE_KEY = 'finansiell-analyse-v1';
 const SECTORS = ['Teknologi','Energi','Materialer','Industri','Forbruksvarer','Helse','Finans','Eiendom','Forsyning','Kommunikasjon','Annet'];
 const CURRENCIES = ['NOK','USD','EUR','GBP','SEK','DKK'];
 
+// ====================================================================
+// OSLO BØRS — SELSKAPSREGISTER
+// ====================================================================
+const OSLO_BORS_DB = [
+  // Energi
+  { name: 'Equinor ASA',                       ticker: 'EQNR',    sector: 'Energi' },
+  { name: 'Aker BP ASA',                        ticker: 'AKRBP',   sector: 'Energi' },
+  { name: 'Vår Energi ASA',                     ticker: 'VAR',     sector: 'Energi' },
+  { name: 'DNO ASA',                            ticker: 'DNO',     sector: 'Energi' },
+  { name: 'Panoro Energy ASA',                  ticker: 'PEN',     sector: 'Energi' },
+  { name: 'OKEA ASA',                           ticker: 'OKEA',    sector: 'Energi' },
+  { name: 'Sval Energi ASA',                    ticker: 'SVAL',    sector: 'Energi' },
+  { name: 'Petroleum Geo-Services ASA',         ticker: 'PGS',     sector: 'Energi' },
+  { name: 'TGS ASA',                            ticker: 'TGS',     sector: 'Energi' },
+  { name: 'Bonheur ASA',                        ticker: 'BON',     sector: 'Energi' },
+  { name: 'Nel ASA',                            ticker: 'NEL',     sector: 'Energi' },
+  { name: 'Scatec ASA',                         ticker: 'SCATC',   sector: 'Energi' },
+  { name: 'Cloudberry Clean Energy ASA',        ticker: 'CLOUD',   sector: 'Energi' },
+  { name: 'Magnora ASA',                        ticker: 'MGN',     sector: 'Energi' },
+  { name: 'Otovo ASA',                          ticker: 'OTOVO',   sector: 'Energi' },
+  { name: 'Agilyx ASA',                         ticker: 'AGLX',    sector: 'Energi' },
+  { name: 'BW Offshore Ltd',                    ticker: 'BWO',     sector: 'Energi' },
+  { name: 'BW LPG Ltd',                         ticker: 'BWLPG',   sector: 'Energi' },
+  { name: 'Flex LNG Ltd',                       ticker: 'FLNG',    sector: 'Energi' },
+  { name: 'Avance Gas Holding Ltd',             ticker: 'AVANCE',  sector: 'Energi' },
+  // Offshore / Olje-service
+  { name: 'Subsea 7 SA',                        ticker: 'SUBC',    sector: 'Energi' },
+  { name: 'Aker Solutions ASA',                 ticker: 'AKSO',    sector: 'Industri' },
+  { name: 'Odfjell Drilling Ltd',               ticker: 'ODL',     sector: 'Energi' },
+  { name: 'Borr Drilling Ltd',                  ticker: 'BORR',    sector: 'Energi' },
+  { name: 'Seadrill Ltd',                       ticker: 'SDRL',    sector: 'Energi' },
+  { name: 'DOF ASA',                            ticker: 'DOF',     sector: 'Energi' },
+  { name: 'Solstad Offshore ASA',               ticker: 'SOFF',    sector: 'Energi' },
+  { name: 'Reach Subsea ASA',                   ticker: 'REACH',   sector: 'Energi' },
+  // Shipping
+  { name: 'Frontline Ltd',                      ticker: 'FRO',     sector: 'Industri' },
+  { name: 'Golden Ocean Group Ltd',             ticker: 'GOGL',    sector: 'Industri' },
+  { name: 'Hafnia Ltd',                         ticker: 'HAFNI',   sector: 'Industri' },
+  { name: 'Höegh Autoliners ASA',               ticker: 'HAUTO',   sector: 'Industri' },
+  { name: 'Wallenius Wilhelmsen ASA',           ticker: 'WAWI',    sector: 'Industri' },
+  { name: 'Wilh. Wilhelmsen Holding ASA',       ticker: 'WWASA',   sector: 'Industri' },
+  { name: 'Stolt-Nielsen Ltd',                  ticker: 'SNI',     sector: 'Industri' },
+  { name: 'Klaveness Combination Carriers ASA', ticker: 'KAVL',    sector: 'Industri' },
+  { name: 'DHT Holdings Inc',                   ticker: 'DHT',     sector: 'Industri' },
+  { name: 'Okeanis Eco Tankers Corp',           ticker: 'OET',     sector: 'Industri' },
+  { name: 'Hunter Group ASA',                   ticker: 'HUNT',    sector: 'Industri' },
+  { name: 'Höegh LNG Holdings Ltd',             ticker: 'HLNG',    sector: 'Energi' },
+  // Sjømat / Havbruk
+  { name: 'Mowi ASA',                           ticker: 'MOWI',    sector: 'Forbruksvarer' },
+  { name: 'SalMar ASA',                         ticker: 'SALM',    sector: 'Forbruksvarer' },
+  { name: 'Lerøy Seafood Group ASA',            ticker: 'LSG',     sector: 'Forbruksvarer' },
+  { name: 'Grieg Seafood ASA',                  ticker: 'GSF',     sector: 'Forbruksvarer' },
+  { name: 'Austevoll Seafood ASA',              ticker: 'AUSS',    sector: 'Forbruksvarer' },
+  { name: 'Bakkafrost P/F',                     ticker: 'BAKKA',   sector: 'Forbruksvarer' },
+  { name: 'Norway Royal Salmon ASA',            ticker: 'NRS',     sector: 'Forbruksvarer' },
+  { name: 'NTS ASA',                            ticker: 'NTS',     sector: 'Forbruksvarer' },
+  { name: 'Aker BioMarine AS',                  ticker: 'AKBM',    sector: 'Forbruksvarer' },
+  // Materialer / Industri
+  { name: 'Yara International ASA',             ticker: 'YAR',     sector: 'Materialer' },
+  { name: 'Norsk Hydro ASA',                    ticker: 'NHY',     sector: 'Materialer' },
+  { name: 'Elkem ASA',                          ticker: 'ELK',     sector: 'Materialer' },
+  { name: 'Borregaard ASA',                     ticker: 'BRG',     sector: 'Materialer' },
+  { name: 'REC Silicon ASA',                    ticker: 'RECSI',   sector: 'Materialer' },
+  { name: 'Orkla ASA',                          ticker: 'ORK',     sector: 'Forbruksvarer' },
+  { name: 'Tomra Systems ASA',                  ticker: 'TOM',     sector: 'Industri' },
+  { name: 'Kongsberg Gruppen ASA',              ticker: 'KOG',     sector: 'Industri' },
+  { name: 'Hexagon Composites ASA',             ticker: 'HEX',     sector: 'Industri' },
+  { name: 'Hexagon Purus ASA',                  ticker: 'HPUR',    sector: 'Industri' },
+  { name: 'Kitron ASA',                         ticker: 'KIT',     sector: 'Industri' },
+  { name: 'Havyard Group ASA',                  ticker: 'HAVYD',   sector: 'Industri' },
+  // Konglomerat / Aker-gruppen
+  { name: 'Aker ASA',                           ticker: 'AKER',    sector: 'Industri' },
+  { name: 'Aker Horizons ASA',                  ticker: 'AKH',     sector: 'Industri' },
+  { name: 'Aker Carbon Capture ASA',            ticker: 'ACC',     sector: 'Industri' },
+  { name: 'Aker Offshore Wind ASA',             ticker: 'AOW',     sector: 'Energi' },
+  // Teknologi
+  { name: 'Nordic Semiconductor ASA',           ticker: 'NOD',     sector: 'Teknologi' },
+  { name: 'Kahoot ASA',                         ticker: 'KAHOT',   sector: 'Teknologi' },
+  { name: 'Atea ASA',                           ticker: 'ATEA',    sector: 'Teknologi' },
+  { name: 'Crayon Group Holding ASA',           ticker: 'CRAYON',  sector: 'Teknologi' },
+  { name: 'Bouvet ASA',                         ticker: 'BOUV',    sector: 'Teknologi' },
+  { name: 'Itera ASA',                          ticker: 'ITERA',   sector: 'Teknologi' },
+  { name: 'Pexip Holding ASA',                  ticker: 'PEXIP',   sector: 'Teknologi' },
+  { name: 'AutoStore Holdings Ltd',             ticker: 'AUTO',    sector: 'Teknologi' },
+  { name: 'Meltwater NV',                       ticker: 'MELG',    sector: 'Teknologi' },
+  { name: 'Opera Ltd',                          ticker: 'OPERA',   sector: 'Teknologi' },
+  { name: 'Zalaris ASA',                        ticker: 'ZAL',     sector: 'Teknologi' },
+  { name: 'IDEX Biometrics ASA',                ticker: 'IDEX',    sector: 'Teknologi' },
+  { name: 'Funcom NV',                          ticker: 'FUNCOM',  sector: 'Teknologi' },
+  // Finans
+  { name: 'DNB Bank ASA',                       ticker: 'DNB',     sector: 'Finans' },
+  { name: 'Storebrand ASA',                     ticker: 'STB',     sector: 'Finans' },
+  { name: 'Gjensidige Forsikring ASA',          ticker: 'GJF',     sector: 'Finans' },
+  { name: 'SpareBank 1 SR-Bank ASA',            ticker: 'SRBANK',  sector: 'Finans' },
+  { name: 'SpareBank 1 SMN',                    ticker: 'MING',    sector: 'Finans' },
+  { name: 'SpareBank 1 Østlandet',              ticker: 'SPOL',    sector: 'Finans' },
+  { name: 'SpareBank 1 Nord-Norge',             ticker: 'NONG',    sector: 'Finans' },
+  { name: 'SpareBank 1 Ringerike Hadeland',     ticker: 'RING',    sector: 'Finans' },
+  { name: 'Sparebanken Vest',                   ticker: 'SVEG',    sector: 'Finans' },
+  { name: 'Sparebanken Møre',                   ticker: 'MORG',    sector: 'Finans' },
+  { name: 'Sparebanken Sør',                    ticker: 'SOON',    sector: 'Finans' },
+  { name: 'Protector Forsikring ASA',           ticker: 'PROT',    sector: 'Finans' },
+  { name: 'Instabank ASA',                      ticker: 'INSTA',   sector: 'Finans' },
+  { name: 'Komplett Bank ASA',                  ticker: 'KOMP',    sector: 'Finans' },
+  // Kommunikasjon / Media
+  { name: 'Telenor ASA',                        ticker: 'TEL',     sector: 'Kommunikasjon' },
+  { name: 'Schibsted ASA A-aksje',              ticker: 'SCHA',    sector: 'Kommunikasjon' },
+  { name: 'Schibsted ASA B-aksje',              ticker: 'SCHB',    sector: 'Kommunikasjon' },
+  { name: 'Adevinta ASA',                       ticker: 'ADE',     sector: 'Kommunikasjon' },
+  // Helse
+  { name: 'Photocure ASA',                      ticker: 'PHO',     sector: 'Helse' },
+  { name: 'Vistin Pharma ASA',                  ticker: 'VISTIN',  sector: 'Helse' },
+  { name: 'Nordic Nanovector ASA',              ticker: 'NANO',    sector: 'Helse' },
+  { name: 'Nykode Therapeutics ASA',            ticker: 'NYKD',    sector: 'Helse' },
+  { name: 'Photon Dynamics ASA',                ticker: 'PHDY',    sector: 'Helse' },
+  // Eiendom
+  { name: 'Entra ASA',                          ticker: 'ENTRA',   sector: 'Eiendom' },
+  { name: 'Norwegian Property ASA',             ticker: 'NPRO',    sector: 'Eiendom' },
+  { name: 'Selvaag Bolig ASA',                  ticker: 'SBO',     sector: 'Eiendom' },
+  { name: 'Solon Eiendom ASA',                  ticker: 'SOLON',   sector: 'Eiendom' },
+];
+
 function getCompanies() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
 }
@@ -819,9 +941,10 @@ function showAddCompanyModal() {
       <button class="btn-close-modal" data-action="close-modal">✕</button>
     </div>
     <div class="modal-body">
-      <div class="field-group">
-        <label class="field-label">Selskapsnavn *</label>
-        <input class="field-input" id="new-name" placeholder="f.eks. Equinor ASA">
+      <div class="field-group" style="position:relative">
+        <label class="field-label">Selskapsnavn * <span style="font-weight:400;color:#94a3b8">(søk blant Oslo Børs-selskaper)</span></label>
+        <input class="field-input" id="new-name" placeholder="Begynn å skrive..." autocomplete="off">
+        <div id="ac-dropdown" class="ac-dropdown" style="display:none"></div>
       </div>
       <div class="field-group">
         <label class="field-label">Ticker *</label>
@@ -844,6 +967,84 @@ function showAddCompanyModal() {
       <button class="btn btn-secondary" data-action="close-modal">Avbryt</button>
       <button class="btn btn-primary" data-action="confirm-add-company">Legg til</button>
     </div>`);
+
+  // Wire up autocomplete after modal is in DOM
+  initAutocomplete();
+}
+
+function initAutocomplete() {
+  const nameInput  = document.getElementById('new-name');
+  const tickerInput = document.getElementById('new-ticker');
+  const sectorSel  = document.getElementById('new-sector');
+  const dropdown   = document.getElementById('ac-dropdown');
+  if (!nameInput || !dropdown) return;
+
+  let activeIdx = -1;
+
+  function showDropdown(items) {
+    if (!items.length) { dropdown.style.display = 'none'; return; }
+    activeIdx = -1;
+    dropdown.innerHTML = items.map((c, i) => `
+      <div class="ac-item" data-index="${i}" data-name="${esc(c.name)}" data-ticker="${esc(c.ticker)}" data-sector="${esc(c.sector)}">
+        <span class="ac-ticker">${esc(c.ticker)}</span>
+        <span class="ac-name">${esc(c.name)}</span>
+        <span class="ac-sector">${esc(c.sector)}</span>
+      </div>`).join('');
+    dropdown.style.display = 'block';
+  }
+
+  function hideDropdown() {
+    dropdown.style.display = 'none';
+    activeIdx = -1;
+  }
+
+  function selectItem(el) {
+    nameInput.value   = el.dataset.name;
+    tickerInput.value = el.dataset.ticker;
+    const sec = el.dataset.sector;
+    if (sectorSel) {
+      const opt = [...sectorSel.options].find(o => o.value === sec);
+      if (opt) sectorSel.value = sec;
+    }
+    hideDropdown();
+  }
+
+  nameInput.addEventListener('input', () => {
+    const q = nameInput.value.trim().toLowerCase();
+    if (q.length < 1) { hideDropdown(); return; }
+    const matches = OSLO_BORS_DB.filter(c =>
+      c.name.toLowerCase().includes(q) || c.ticker.toLowerCase().includes(q)
+    ).slice(0, 10);
+    showDropdown(matches);
+  });
+
+  nameInput.addEventListener('keydown', e => {
+    const items = dropdown.querySelectorAll('.ac-item');
+    if (!items.length || dropdown.style.display === 'none') return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('ac-item-active', i === activeIdx));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('ac-item-active', i === activeIdx));
+    } else if (e.key === 'Enter' && activeIdx >= 0) {
+      e.preventDefault();
+      selectItem(items[activeIdx]);
+    } else if (e.key === 'Escape') {
+      hideDropdown();
+    }
+  });
+
+  dropdown.addEventListener('mousedown', e => {
+    const item = e.target.closest('.ac-item');
+    if (item) { e.preventDefault(); selectItem(item); }
+  });
+
+  document.addEventListener('mousedown', e => {
+    if (!nameInput.contains(e.target) && !dropdown.contains(e.target)) hideDropdown();
+  }, { once: false });
 }
 
 // ====================================================================
