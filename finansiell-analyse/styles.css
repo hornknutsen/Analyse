@@ -112,14 +112,32 @@ body {
   padding: 12px 0;
 }
 
+.sidebar-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px 8px 16px;
+}
+
 .sidebar-label {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--sidebar-text);
-  padding: 0 16px 8px;
   text-transform: uppercase;
 }
+
+.btn-new-folder {
+  background: none;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  color: var(--sidebar-text);
+  font-size: 11px;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-new-folder:hover { border-color: var(--brand-color); color: var(--brand-color); }
 
 .company-nav-item {
   display: flex;
@@ -848,6 +866,129 @@ tr:hover td:first-child { background: #f5f5f5; }
 }
 
 .btn-add-peer:hover { border-color: var(--brand-color); color: var(--brand-color); }
+
+/* ============================================================
+   FOLDER STYLES — SIDEBAR
+   ============================================================ */
+.folder-group { margin-bottom: 2px; }
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px 7px 12px;
+  cursor: pointer;
+  color: var(--sidebar-text);
+  transition: background 0.15s;
+  user-select: none;
+}
+.folder-header:hover { background: var(--sidebar-hover); color: var(--sidebar-text-active); }
+
+.folder-arrow {
+  font-size: 8px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  color: var(--sidebar-text);
+}
+.folder-arrow.open { transform: rotate(90deg); }
+
+.folder-icon { font-size: 13px; flex-shrink: 0; }
+.folder-name { flex: 1; font-size: 12px; font-weight: 600; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.folder-count {
+  font-size: 10px;
+  background: rgba(255,255,255,0.1);
+  padding: 1px 5px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.btn-delete-folder {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: transparent;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.folder-header:hover .btn-delete-folder { color: #64748b; }
+.btn-delete-folder:hover { color: #ef4444 !important; background: rgba(239,68,68,0.1); }
+
+.folder-companies { padding-left: 8px; }
+.folder-empty { padding: 6px 16px; font-size: 11px; color: #475569; font-style: italic; }
+
+.unfiled-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #475569;
+  padding: 10px 16px 4px;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   FOLDER STYLES — DASHBOARD
+   ============================================================ */
+.dashboard-folder {
+  margin-bottom: 28px;
+}
+
+.dashboard-folder-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-folder-icon { font-size: 18px; }
+.dashboard-folder-name { font-size: 16px; font-weight: 700; }
+.dashboard-folder-count { font-size: 12px; color: var(--text-muted); }
+
+.btn-delete-folder-dash {
+  margin-left: auto;
+  background: none;
+  border: 1px solid #fecaca;
+  color: #ef4444;
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-delete-folder-dash:hover { background: #fee2e2; }
+
+.folder-empty-dash {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 16px 0;
+}
+
+/* ============================================================
+   FOLDER SELECT — COMPANY HEADER
+   ============================================================ */
+.folder-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.folder-select-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+.folder-select-input {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: inherit;
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--text);
+}
+.folder-select-input:focus { outline: none; border-color: var(--brand-color); }
 
 /* ============================================================
    AUTOCOMPLETE DROPDOWN

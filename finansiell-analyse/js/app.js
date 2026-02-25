@@ -135,6 +135,28 @@ function getCompanies() {
 }
 function saveCompanies(cs) { localStorage.setItem(STORAGE_KEY, JSON.stringify(cs)); }
 function getCompany(id) { return getCompanies().find(c => c.id === id); }
+
+// Folder storage
+const FOLDERS_KEY = 'finansiell-analyse-folders-v1';
+function getFolders() {
+  try { return JSON.parse(localStorage.getItem(FOLDERS_KEY)) || []; } catch { return []; }
+}
+function saveFolders(fs) { localStorage.setItem(FOLDERS_KEY, JSON.stringify(fs)); }
+function createFolder(name) {
+  const folders = getFolders();
+  const f = { id: crypto.randomUUID(), name, createdAt: Date.now() };
+  folders.push(f);
+  saveFolders(folders);
+  state.expandedFolders.add(f.id);
+  return f;
+}
+function deleteFolder(id) {
+  saveFolders(getFolders().filter(f => f.id !== id));
+  // Move companies in this folder to "no folder"
+  const cs = getCompanies().map(c => c.folderId === id ? { ...c, folderId: null } : c);
+  saveCompanies(cs);
+  state.expandedFolders.delete(id);
+}
 function saveCompany(company) {
   const cs = getCompanies();
   const i = cs.findIndex(c => c.id === company.id);
@@ -183,6 +205,7 @@ function createCompany(data) {
   const company = {
     id: crypto.randomUUID(), name: data.name, ticker: data.ticker.toUpperCase(),
     sector: data.sector || '', currency: data.currency || 'NOK',
+    folderId: data.folderId || null,
     createdAt: Date.now(), updatedAt: Date.now(),
     dcf: defaultDCF(), multiples: defaultMultiples()
   };
@@ -334,7 +357,7 @@ function fPct(v, d=1) { return !isFinite(v) ? '—' : (v*100).toFixed(d)+'%'; }
 // 5. APP STATE
 // ====================================================================
 
-const state = { currentId: null, currentTab: 'dcf' };
+const state = { currentId: null, currentTab: 'dcf', expandedFolders: new Set() };
 
 // ====================================================================
 // 6. RENDER: SIDEBAR
@@ -342,13 +365,50 @@ const state = { currentId: null, currentTab: 'dcf' };
 
 function renderSidebar() {
   const cs = getCompanies();
+  const folders = getFolders();
   const list = document.getElementById('company-list');
-  list.innerHTML = cs.length ? cs.map(c => `
-    <div class="company-nav-item ${c.id === state.currentId ? 'active' : ''}"
-         data-action="open-company" data-id="${c.id}">
+
+  function companyItem(c) {
+    return `<div class="company-nav-item ${c.id === state.currentId ? 'active' : ''}"
+        data-action="open-company" data-id="${c.id}">
       <span class="company-nav-ticker">${esc(c.ticker)}</span>
       <span class="company-nav-name">${esc(c.name)}</span>
-    </div>`).join('') : `<div style="padding:8px 16px;font-size:11px;color:#475569">Ingen selskaper ennå</div>`;
+    </div>`;
+  }
+
+  let html = '';
+
+  // Folders
+  folders.forEach(f => {
+    const members = cs.filter(c => c.folderId === f.id);
+    const open = state.expandedFolders.has(f.id);
+    html += `
+      <div class="folder-group">
+        <div class="folder-header" data-action="toggle-folder" data-id="${f.id}">
+          <span class="folder-arrow ${open ? 'open' : ''}">▶</span>
+          <span class="folder-icon">📁</span>
+          <span class="folder-name">${esc(f.name)}</span>
+          <span class="folder-count">${members.length}</span>
+          <button class="btn-delete-folder" data-action="delete-folder" data-id="${f.id}" title="Slett mappe">✕</button>
+        </div>
+        <div class="folder-companies" style="display:${open ? 'block' : 'none'}">
+          ${members.length ? members.map(companyItem).join('') : '<div class="folder-empty">Tom mappe</div>'}
+        </div>
+      </div>`;
+  });
+
+  // Unfiled companies
+  const unfiled = cs.filter(c => !c.folderId);
+  if (unfiled.length) {
+    html += `<div class="unfiled-label">UTEN MAPPE</div>`;
+    html += unfiled.map(companyItem).join('');
+  }
+
+  if (!cs.length && !folders.length) {
+    html = `<div style="padding:8px 16px;font-size:11px;color:#475569">Ingen selskaper ennå</div>`;
+  }
+
+  list.innerHTML = html;
 }
 
 // ====================================================================
@@ -357,33 +417,66 @@ function renderSidebar() {
 
 function renderDashboard() {
   const cs = getCompanies();
+  const folders = getFolders();
   state.currentId = null;
   renderSidebar();
   const main = document.getElementById('main-content');
-  if (!cs.length) {
+
+  if (!cs.length && !folders.length) {
     main.innerHTML = `
       <div class="empty-state">
-        <h3>Ingen selskaper</h3>
-        <p>Klikk «+ Legg til selskap» i sidepanelet for å komme i gang.</p>
+        <h3>Ingen selskaper ennå</h3>
+        <p>Klikk «+ Legg til selskap» for å legge til ditt første selskap, eller opprett en mappe i sidepanelet.</p>
       </div>`;
     return;
   }
-  main.innerHTML = `
-    <div class="dashboard-header">
-      <h2>Portefølje</h2>
-      <p>${cs.length} selskap${cs.length !== 1 ? 'er' : ''}</p>
-    </div>
-    <div class="company-grid">
-      ${cs.map(c => `
-        <div class="company-card" data-action="open-company" data-id="${c.id}">
-          <div class="company-card-header">
-            <span class="company-card-ticker">${esc(c.ticker)}</span>
-            <button class="btn-delete-company" data-action="delete-company" data-id="${c.id}" title="Slett">✕</button>
-          </div>
-          <div class="company-card-name">${esc(c.name)}</div>
-          <div class="company-card-meta">${esc(c.sector)} · ${esc(c.currency)}</div>
-        </div>`).join('')}
+
+  function cardGrid(companies) {
+    return `<div class="company-grid">${companies.map(c => `
+      <div class="company-card" data-action="open-company" data-id="${c.id}">
+        <div class="company-card-header">
+          <span class="company-card-ticker">${esc(c.ticker)}</span>
+          <button class="btn-delete-company" data-action="delete-company" data-id="${c.id}" title="Slett">✕</button>
+        </div>
+        <div class="company-card-name">${esc(c.name)}</div>
+        <div class="company-card-meta">${esc(c.sector)} · ${esc(c.currency)}</div>
+      </div>`).join('')}
     </div>`;
+  }
+
+  let html = `<div class="dashboard-header">
+    <h2>Portefølje</h2>
+    <p>${cs.length} selskap${cs.length !== 1 ? 'er' : ''} · ${folders.length} mappe${folders.length !== 1 ? 'r' : ''}</p>
+  </div>`;
+
+  // Render each folder section
+  folders.forEach(f => {
+    const members = cs.filter(c => c.folderId === f.id);
+    html += `
+      <div class="dashboard-folder">
+        <div class="dashboard-folder-header">
+          <span class="dashboard-folder-icon">📁</span>
+          <span class="dashboard-folder-name">${esc(f.name)}</span>
+          <span class="dashboard-folder-count">${members.length} selskap${members.length !== 1 ? 'er' : ''}</span>
+          <button class="btn-delete-folder-dash" data-action="delete-folder" data-id="${f.id}" title="Slett mappe">Slett mappe</button>
+        </div>
+        ${members.length ? cardGrid(members) : '<p class="folder-empty-dash">Ingen selskaper i denne mappen ennå.</p>'}
+      </div>`;
+  });
+
+  // Unfiled
+  const unfiled = cs.filter(c => !c.folderId);
+  if (unfiled.length) {
+    html += `
+      <div class="dashboard-folder">
+        <div class="dashboard-folder-header">
+          <span class="dashboard-folder-name" style="color:var(--text-muted)">Uten mappe</span>
+        </div>
+        ${cardGrid(unfiled)}
+      </div>`;
+  }
+
+  main.innerHTML = html;
 }
 
 // ====================================================================
@@ -395,7 +488,16 @@ function renderCompany(id) {
   if (!company) { renderDashboard(); return; }
   state.currentId = id;
   renderSidebar();
+  const folders = getFolders();
   const main = document.getElementById('main-content');
+  const folderSelect = folders.length ? `
+    <div class="folder-select-wrap">
+      <label class="folder-select-label">📁 Mappe</label>
+      <select class="folder-select-input" data-action="set-company-folder" data-id="${company.id}">
+        <option value="">Ingen mappe</option>
+        ${folders.map(f => `<option value="${f.id}" ${company.folderId === f.id ? 'selected' : ''}>${esc(f.name)}</option>`).join('')}
+      </select>
+    </div>` : '';
   main.innerHTML = `
     <div class="company-header">
       <span class="company-ticker-badge">${esc(company.ticker)}</span>
@@ -403,6 +505,7 @@ function renderCompany(id) {
         <h2>${esc(company.name)}</h2>
         <div class="meta">${esc(company.sector)} · ${esc(company.currency)}</div>
       </div>
+      ${folderSelect}
       <button class="btn-danger-sm" data-action="delete-company" data-id="${company.id}">Slett selskap</button>
     </div>
     <div class="tabs">
@@ -934,6 +1037,25 @@ function closeModal() {
   document.getElementById('modal-content').innerHTML = '';
 }
 
+function showAddFolderModal() {
+  showModal(`
+    <div class="modal-header">
+      <h3>Opprett mappe</h3>
+      <button class="btn-close-modal" data-action="close-modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">Mappenavn *</label>
+        <input class="field-input" id="new-folder-name" placeholder="f.eks. Energi, Langsiktig, Watchlist...">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-action="close-modal">Avbryt</button>
+      <button class="btn btn-primary" data-action="confirm-add-folder">Opprett</button>
+    </div>`);
+  setTimeout(() => document.getElementById('new-folder-name')?.focus(), 50);
+}
+
 function showAddCompanyModal() {
   showModal(`
     <div class="modal-header">
@@ -962,6 +1084,14 @@ function showAddCompanyModal() {
           ${CURRENCIES.map(c => `<option>${c}</option>`).join('')}
         </select>
       </div>
+      ${getFolders().length ? `
+      <div class="field-group">
+        <label class="field-label">Legg i mappe</label>
+        <select class="field-input" id="new-folder">
+          <option value="">Ingen mappe</option>
+          ${getFolders().map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join('')}
+        </select>
+      </div>` : ''}
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" data-action="close-modal">Avbryt</button>
@@ -1185,12 +1315,13 @@ document.addEventListener('click', e => {
     closeModal();
   }
   else if (action === 'confirm-add-company') {
-    const name   = document.getElementById('new-name').value.trim();
-    const ticker = document.getElementById('new-ticker').value.trim();
-    const sector = document.getElementById('new-sector').value;
+    const name     = document.getElementById('new-name').value.trim();
+    const ticker   = document.getElementById('new-ticker').value.trim();
+    const sector   = document.getElementById('new-sector').value;
     const currency = document.getElementById('new-currency').value;
+    const folderId = document.getElementById('new-folder')?.value || null;
     if (!name || !ticker) { alert('Navn og ticker er påkrevd.'); return; }
-    const company = createCompany({ name, ticker, sector, currency });
+    const company = createCompany({ name, ticker, sector, currency, folderId });
     closeModal();
     state.currentTab = 'dcf';
     renderCompany(company.id);
@@ -1223,6 +1354,37 @@ document.addEventListener('click', e => {
     const el = document.getElementById('tab-content');
     if (el) { state.currentTab = 'multiples'; el.innerHTML = renderMultiples(company); }
   }
+  else if (action === 'add-folder') {
+    showAddFolderModal();
+  }
+  else if (action === 'confirm-add-folder') {
+    const name = document.getElementById('new-folder-name')?.value.trim();
+    if (!name) { alert('Mappenavn er påkrevd.'); return; }
+    createFolder(name);
+    closeModal();
+    renderDashboard();
+  }
+  else if (action === 'delete-folder') {
+    e.stopPropagation();
+    const id = btn.dataset.id;
+    const f = getFolders().find(x => x.id === id);
+    if (!f) return;
+    const members = getCompanies().filter(c => c.folderId === id).length;
+    const msg = members > 0
+      ? `Slett mappen "${f.name}"? ${members} selskap${members !== 1 ? 'er' : ''} flyttes til "Uten mappe".`
+      : `Slett mappen "${f.name}"?`;
+    if (!confirm(msg)) return;
+    deleteFolder(id);
+    if (state.currentId) renderCompany(state.currentId);
+    else renderDashboard();
+  }
+  else if (action === 'toggle-folder') {
+    e.stopPropagation();
+    const id = btn.dataset.id;
+    if (state.expandedFolders.has(id)) state.expandedFolders.delete(id);
+    else state.expandedFolders.add(id);
+    renderSidebar();
+  }
 });
 
 // Add-company button click (direct ID handler as backup)
@@ -1252,9 +1414,24 @@ document.addEventListener('input', e => {
   }
 });
 
-// Terminal value method change triggers full re-render of TV section
+// Change events — terminal value method + folder selector
 document.addEventListener('change', e => {
   const el = e.target;
+
+  // Folder assignment from company header
+  if (el.dataset.action === 'set-company-folder') {
+    const id = el.dataset.id;
+    const cs = getCompanies();
+    const idx = cs.findIndex(c => c.id === id);
+    if (idx !== -1) {
+      cs[idx].folderId = el.value || null;
+      cs[idx].updatedAt = Date.now();
+      saveCompanies(cs);
+      renderSidebar();
+    }
+    return;
+  }
+
   const path = el.dataset.path;
   if (!path || !state.currentId) return;
   if (path !== 'dcf.terminalValue.method') return;
