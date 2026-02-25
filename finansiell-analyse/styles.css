@@ -132,10 +132,12 @@ body {
   border: 1px solid #334155;
   border-radius: 4px;
   color: var(--sidebar-text);
-  font-size: 11px;
-  padding: 2px 6px;
+  padding: 3px 5px;
   cursor: pointer;
   transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .btn-new-folder:hover { border-color: var(--brand-color); color: var(--brand-color); }
 
@@ -893,7 +895,7 @@ tr:hover td:first-child { background: #f5f5f5; }
 .folder-arrow.open { transform: rotate(90deg); }
 
 .folder-icon { font-size: 13px; flex-shrink: 0; }
-.folder-name { flex: 1; font-size: 12px; font-weight: 600; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.folder-name { flex: 1; font-size: 13px; font-weight: 700; color: #f1f5f9; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
 .folder-count {
   font-size: 10px;

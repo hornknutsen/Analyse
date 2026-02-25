@@ -385,11 +385,11 @@ function renderSidebar() {
     html += `
       <div class="folder-group">
         <div class="folder-header" data-action="toggle-folder" data-id="${f.id}">
-          <span class="folder-arrow ${open ? 'open' : ''}">▶</span>
           <span class="folder-icon">📁</span>
           <span class="folder-name">${esc(f.name)}</span>
           <span class="folder-count">${members.length}</span>
           <button class="btn-delete-folder" data-action="delete-folder" data-id="${f.id}" title="Slett mappe">✕</button>
+          <span class="folder-arrow ${open ? 'open' : ''}">▶</span>
         </div>
         <div class="folder-companies" style="display:${open ? 'block' : 'none'}">
           ${members.length ? members.map(companyItem).join('') : '<div class="folder-empty">Tom mappe</div>'}
