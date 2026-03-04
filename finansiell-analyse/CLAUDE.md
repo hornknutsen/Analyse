@@ -38,11 +38,12 @@ Ingen rammeverk. Ingen moduler. Ingen bundler.
 ```
 
 ### DCFObject – nøkkelfelter
-- `historical` – 3 år med revenue/ebit/da/capex/nwcChange
-- `assumptions` – arrays[10] for vekst, margin, D&A, capex, NWC per projeksjonår
-- `wacc` – riskFreeRate, erp, beta, costOfDebt, taxRate, debtWeight, equityWeight
+- `historical` – 3 år med revenue/cogs/sga/rd/otherOpex/da/capex/nwcChange
+- `assumptions` – arrays[10] for revenueGrowth, cogsPercent, sgaPercent, rdPercent, otherOpexPercent, daPercent, capexPercent, nwcChangePercent per projeksjonår + taxRate (enkelt)
+- `wacc` – riskFreeRate, erp, beta, sizePremium, alphaRisk, costOfDebt, taxRate, equityMarketCap, totalDebt (+ fallback: debtWeight, equityWeight)
 - `terminalValue` – method (`gordon`|`exit`), terminalGrowthRate, exitMultiple
-- `bridge` – netDebt, minorities, otherAdjustments, sharesOutstanding, currentPrice
+- `bridge` – totalDebt, cash, minorities, otherAdjustments, sharesOutstanding, currentPrice
+- `migrateCompany(company)` patcher eldre selskaper; kalles automatisk fra `getCompany()`
 
 ## Viktige konstanter
 

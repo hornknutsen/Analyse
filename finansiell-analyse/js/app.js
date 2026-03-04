@@ -9,132 +9,366 @@ const SECTORS = ['Teknologi','Energi','Materialer','Industri','Forbruksvarer','H
 const CURRENCIES = ['NOK','USD','EUR','GBP','SEK','DKK'];
 
 // ====================================================================
-// OSLO BØRS — SELSKAPSREGISTER
+// OSLO BØRS — SELSKAPSREGISTER (oppdatert mars 2026, ~280 selskaper)
+// Kilde: stockanalysis.com/list/oslo-bors + euronext.com
+// Fjernet fra børs: Kahoot (jan 2024), Adevinta (jun 2024),
+//   Norway Royal Salmon (nov 2022), NTS ASA (jan 2023),
+//   Avance Gas (aug 2025), Crayon Group (jul 2025)
+// Navneendringer: Schibsted -> Vend Marketplaces (mai 2025),
+//   Sparebanken Vest -> Sparebanken Norge (mai 2025)
 // ====================================================================
 const OSLO_BORS_DB = [
-  // Energi
-  { name: 'Equinor ASA',                       ticker: 'EQNR',    sector: 'Energi' },
-  { name: 'Aker BP ASA',                        ticker: 'AKRBP',   sector: 'Energi' },
-  { name: 'Vår Energi ASA',                     ticker: 'VAR',     sector: 'Energi' },
-  { name: 'DNO ASA',                            ticker: 'DNO',     sector: 'Energi' },
-  { name: 'Panoro Energy ASA',                  ticker: 'PEN',     sector: 'Energi' },
-  { name: 'OKEA ASA',                           ticker: 'OKEA',    sector: 'Energi' },
-  { name: 'Sval Energi ASA',                    ticker: 'SVAL',    sector: 'Energi' },
-  { name: 'Petroleum Geo-Services ASA',         ticker: 'PGS',     sector: 'Energi' },
-  { name: 'TGS ASA',                            ticker: 'TGS',     sector: 'Energi' },
-  { name: 'Bonheur ASA',                        ticker: 'BON',     sector: 'Energi' },
-  { name: 'Nel ASA',                            ticker: 'NEL',     sector: 'Energi' },
-  { name: 'Scatec ASA',                         ticker: 'SCATC',   sector: 'Energi' },
-  { name: 'Cloudberry Clean Energy ASA',        ticker: 'CLOUD',   sector: 'Energi' },
-  { name: 'Magnora ASA',                        ticker: 'MGN',     sector: 'Energi' },
-  { name: 'Otovo ASA',                          ticker: 'OTOVO',   sector: 'Energi' },
-  { name: 'Agilyx ASA',                         ticker: 'AGLX',    sector: 'Energi' },
-  { name: 'BW Offshore Ltd',                    ticker: 'BWO',     sector: 'Energi' },
-  { name: 'BW LPG Ltd',                         ticker: 'BWLPG',   sector: 'Energi' },
-  { name: 'Flex LNG Ltd',                       ticker: 'FLNG',    sector: 'Energi' },
-  { name: 'Avance Gas Holding Ltd',             ticker: 'AVANCE',  sector: 'Energi' },
-  // Offshore / Olje-service
-  { name: 'Subsea 7 SA',                        ticker: 'SUBC',    sector: 'Energi' },
-  { name: 'Aker Solutions ASA',                 ticker: 'AKSO',    sector: 'Industri' },
-  { name: 'Odfjell Drilling Ltd',               ticker: 'ODL',     sector: 'Energi' },
-  { name: 'Borr Drilling Ltd',                  ticker: 'BORR',    sector: 'Energi' },
-  { name: 'Seadrill Ltd',                       ticker: 'SDRL',    sector: 'Energi' },
-  { name: 'DOF ASA',                            ticker: 'DOF',     sector: 'Energi' },
-  { name: 'Solstad Offshore ASA',               ticker: 'SOFF',    sector: 'Energi' },
-  { name: 'Reach Subsea ASA',                   ticker: 'REACH',   sector: 'Energi' },
+  // --- Energi (olje, gass, fornybar) ---
+  { name: 'Equinor ASA',                        ticker: 'EQNR',    sector: 'Energi' },
+  { name: 'Aker BP ASA',                         ticker: 'AKRBP',   sector: 'Energi' },
+  { name: 'Vår Energi ASA',                      ticker: 'VAR',     sector: 'Energi' },
+  { name: 'DNO ASA',                             ticker: 'DNO',     sector: 'Energi' },
+  { name: 'Panoro Energy ASA',                   ticker: 'PEN',     sector: 'Energi' },
+  { name: 'OKEA ASA',                            ticker: 'OKEA',    sector: 'Energi' },
+  { name: 'Petroleum Geo-Services ASA',          ticker: 'PGS',     sector: 'Energi' },
+  { name: 'TGS ASA',                             ticker: 'TGS',     sector: 'Energi' },
+  { name: 'Bonheur ASA',                         ticker: 'BONHR',   sector: 'Energi' },
+  { name: 'BW Energy Limited',                   ticker: 'BWE',     sector: 'Energi' },
+  { name: 'BW Offshore Limited',                 ticker: 'BWO',     sector: 'Energi' },
+  { name: 'BlueNord ASA',                        ticker: 'BNOR',    sector: 'Energi' },
+  { name: 'Paratus Energy Services Ltd.',        ticker: 'PLSV',    sector: 'Energi' },
+  { name: 'PetroNor E&P ASA',                    ticker: 'PNOR',    sector: 'Energi' },
+  { name: 'Questerre Energy Corporation',        ticker: 'QEC',     sector: 'Energi' },
+  { name: 'Interoil Exploration and Production ASA', ticker: 'IOX', sector: 'Energi' },
+  { name: 'North Energy ASA',                    ticker: 'NORTH',   sector: 'Energi' },
+  { name: 'Petrolia SE',                         ticker: 'PSE',     sector: 'Energi' },
+  { name: 'Zenith Energy Ltd.',                  ticker: 'ZENA',    sector: 'Energi' },
+  { name: 'Electromagnetic Geoservices ASA',     ticker: 'EMGS',    sector: 'Energi' },
+  // Offshore drilling & services
+  { name: 'Subsea 7 S.A.',                       ticker: 'SUBC',    sector: 'Energi' },
+  { name: 'Aker Solutions ASA',                  ticker: 'AKSO',    sector: 'Energi' },
+  { name: 'Odfjell Drilling Ltd.',               ticker: 'ODL',     sector: 'Energi' },
+  { name: 'Borr Drilling Limited',               ticker: 'BORR',    sector: 'Energi' },
+  { name: 'Seadrill Ltd.',                       ticker: 'SDRL',    sector: 'Energi' },
+  { name: 'DOF Group ASA',                       ticker: 'DOFG',    sector: 'Energi' },
+  { name: 'Solstad Maritime ASA',                ticker: 'SOMA',    sector: 'Energi' },
+  { name: 'Solstad Offshore ASA',                ticker: 'SOFF',    sector: 'Industri' },
+  { name: 'Reach Subsea ASA',                    ticker: 'REACH',   sector: 'Energi' },
+  { name: 'Shelf Drilling, Ltd.',                ticker: 'SHLF',    sector: 'Energi' },
+  { name: 'Archer Limited',                      ticker: 'ARCH',    sector: 'Energi' },
+  { name: 'Akastor ASA',                         ticker: 'AKAST',   sector: 'Energi' },
+  { name: 'Odfjell Technology Ltd.',             ticker: 'OTL',     sector: 'Energi' },
+  { name: 'Golden Energy Offshore Services ASA', ticker: 'GEOS',    sector: 'Energi' },
+  { name: 'Northern Ocean Ltd.',                 ticker: 'NOL',     sector: 'Industri' },
+  { name: 'Vantage Drilling International Ltd.', ticker: 'VDI',     sector: 'Energi' },
+  { name: 'Dolphin Drilling AS',                 ticker: 'DDRIL',   sector: 'Energi' },
+  { name: 'Deep Value Driller AS',               ticker: 'DVD',     sector: 'Energi' },
+  { name: 'NorAm Drilling AS',                   ticker: 'NORAM',   sector: 'Energi' },
+  { name: 'Sea1 Offshore Inc.',                  ticker: 'SEA1',    sector: 'Industri' },
+  { name: 'Ventura Offshore Holding Ltd.',       ticker: 'VTURA',   sector: 'Energi' },
+  // Fornybar energi
+  { name: 'Nel ASA',                             ticker: 'NEL',     sector: 'Forsyning' },
+  { name: 'Scatec ASA',                          ticker: 'SCATC',   sector: 'Forsyning' },
+  { name: 'Cloudberry Clean Energy ASA',         ticker: 'CLOUD',   sector: 'Forsyning' },
+  { name: 'Otovo ASA',                           ticker: 'OTOVO',   sector: 'Forsyning' },
+  { name: 'Agilyx ASA',                          ticker: 'AGLX',    sector: 'Forsyning' },
+  { name: 'Arendals Fossekompani ASA',           ticker: 'AFK',     sector: 'Forsyning' },
+  { name: 'Integrated Wind Solutions ASA',       ticker: 'IWS',     sector: 'Forsyning' },
+  { name: 'MPC Energy Solutions N.V.',           ticker: 'MPCES',   sector: 'Forsyning' },
+  { name: 'Aker Horizons ASA',                   ticker: 'AKH',     sector: 'Forsyning' },
+  { name: 'Capsol Technologies ASA',             ticker: 'CAPSL',   sector: 'Forsyning' },
+  { name: 'Cavendish Hydrogen ASA',              ticker: 'CAVEN',   sector: 'Forsyning' },
+  { name: 'HydrogenPro ASA',                     ticker: 'HYPRO',   sector: 'Forsyning' },
+  { name: 'Hynion AS',                           ticker: 'HYN',     sector: 'Forsyning' },
+  { name: 'Ocean Sun AS',                        ticker: 'OSUN',    sector: 'Forsyning' },
+  { name: 'Ocean GeoLoop AS',                    ticker: 'OCEAN',   sector: 'Forsyning' },
+  { name: 'EAM Solar ASA',                       ticker: 'EAM',     sector: 'Forsyning' },
+  { name: 'Envipco Holding N.V.',                ticker: 'ENVIP',   sector: 'Forsyning' },
+  { name: 'Cambi ASA',                           ticker: 'CAMBI',   sector: 'Forsyning' },
+  { name: 'Scana ASA',                           ticker: 'SCANA',   sector: 'Forsyning' },
+  { name: 'Zaptec ASA',                          ticker: 'ZAP',     sector: 'Forsyning' },
+  { name: 'Pyrum Innovations AG',                ticker: 'PYRUM',   sector: 'Forsyning' },
+  { name: 'ReFuels N.V.',                        ticker: 'REFL',    sector: 'Forsyning' },
+  { name: 'Desert Control AS',                   ticker: 'DSRT',    sector: 'Forsyning' },
+  { name: 'Skandia GreenPower AS',               ticker: 'SKAND',   sector: 'Forsyning' },
+  { name: 'Bergen Carbon Solutions AS',          ticker: 'BCS',     sector: 'Forsyning' },
+  { name: 'M Vest Water AS',                     ticker: 'MVW',     sector: 'Forsyning' },
+  { name: 'Zelluna ASA',                         ticker: 'ZLNA',    sector: 'Forsyning' },
+  { name: 'Energeia AS',                         ticker: 'ENERG',   sector: 'Forsyning' },
+  { name: 'SED Energy Holdings Plc',             ticker: 'ENH',     sector: 'Forsyning' },
+  // LNG / Gasstankere
+  { name: 'Flex LNG Ltd.',                       ticker: 'FLNG',    sector: 'Energi' },
+  { name: 'BW LPG Limited',                      ticker: 'BWLPG',   sector: 'Industri' },
+  { name: 'Awilco LNG ASA',                      ticker: 'ALNG',    sector: 'Energi' },
+  // --- Industri (shipping, konglomerat, industri) ---
   // Shipping
-  { name: 'Frontline Ltd',                      ticker: 'FRO',     sector: 'Industri' },
-  { name: 'Golden Ocean Group Ltd',             ticker: 'GOGL',    sector: 'Industri' },
-  { name: 'Hafnia Ltd',                         ticker: 'HAFNI',   sector: 'Industri' },
-  { name: 'Höegh Autoliners ASA',               ticker: 'HAUTO',   sector: 'Industri' },
-  { name: 'Wallenius Wilhelmsen ASA',           ticker: 'WAWI',    sector: 'Industri' },
-  { name: 'Wilh. Wilhelmsen Holding ASA',       ticker: 'WWASA',   sector: 'Industri' },
-  { name: 'Stolt-Nielsen Ltd',                  ticker: 'SNI',     sector: 'Industri' },
-  { name: 'Klaveness Combination Carriers ASA', ticker: 'KAVL',    sector: 'Industri' },
-  { name: 'DHT Holdings Inc',                   ticker: 'DHT',     sector: 'Industri' },
-  { name: 'Okeanis Eco Tankers Corp',           ticker: 'OET',     sector: 'Industri' },
-  { name: 'Hunter Group ASA',                   ticker: 'HUNT',    sector: 'Industri' },
-  { name: 'Höegh LNG Holdings Ltd',             ticker: 'HLNG',    sector: 'Energi' },
-  // Sjømat / Havbruk
-  { name: 'Mowi ASA',                           ticker: 'MOWI',    sector: 'Forbruksvarer' },
-  { name: 'SalMar ASA',                         ticker: 'SALM',    sector: 'Forbruksvarer' },
-  { name: 'Lerøy Seafood Group ASA',            ticker: 'LSG',     sector: 'Forbruksvarer' },
-  { name: 'Grieg Seafood ASA',                  ticker: 'GSF',     sector: 'Forbruksvarer' },
-  { name: 'Austevoll Seafood ASA',              ticker: 'AUSS',    sector: 'Forbruksvarer' },
-  { name: 'Bakkafrost P/F',                     ticker: 'BAKKA',   sector: 'Forbruksvarer' },
-  { name: 'Norway Royal Salmon ASA',            ticker: 'NRS',     sector: 'Forbruksvarer' },
-  { name: 'NTS ASA',                            ticker: 'NTS',     sector: 'Forbruksvarer' },
-  { name: 'Aker BioMarine AS',                  ticker: 'AKBM',    sector: 'Forbruksvarer' },
-  // Materialer / Industri
-  { name: 'Yara International ASA',             ticker: 'YAR',     sector: 'Materialer' },
-  { name: 'Norsk Hydro ASA',                    ticker: 'NHY',     sector: 'Materialer' },
-  { name: 'Elkem ASA',                          ticker: 'ELK',     sector: 'Materialer' },
-  { name: 'Borregaard ASA',                     ticker: 'BRG',     sector: 'Materialer' },
-  { name: 'REC Silicon ASA',                    ticker: 'RECSI',   sector: 'Materialer' },
-  { name: 'Orkla ASA',                          ticker: 'ORK',     sector: 'Forbruksvarer' },
-  { name: 'Tomra Systems ASA',                  ticker: 'TOM',     sector: 'Industri' },
-  { name: 'Kongsberg Gruppen ASA',              ticker: 'KOG',     sector: 'Industri' },
-  { name: 'Hexagon Composites ASA',             ticker: 'HEX',     sector: 'Industri' },
-  { name: 'Hexagon Purus ASA',                  ticker: 'HPUR',    sector: 'Industri' },
-  { name: 'Kitron ASA',                         ticker: 'KIT',     sector: 'Industri' },
-  { name: 'Havyard Group ASA',                  ticker: 'HAVYD',   sector: 'Industri' },
-  // Konglomerat / Aker-gruppen
-  { name: 'Aker ASA',                           ticker: 'AKER',    sector: 'Industri' },
-  { name: 'Aker Horizons ASA',                  ticker: 'AKH',     sector: 'Industri' },
-  { name: 'Aker Carbon Capture ASA',            ticker: 'ACC',     sector: 'Industri' },
-  { name: 'Aker Offshore Wind ASA',             ticker: 'AOW',     sector: 'Energi' },
-  // Teknologi
-  { name: 'Nordic Semiconductor ASA',           ticker: 'NOD',     sector: 'Teknologi' },
-  { name: 'Kahoot ASA',                         ticker: 'KAHOT',   sector: 'Teknologi' },
-  { name: 'Atea ASA',                           ticker: 'ATEA',    sector: 'Teknologi' },
-  { name: 'Crayon Group Holding ASA',           ticker: 'CRAYON',  sector: 'Teknologi' },
-  { name: 'Bouvet ASA',                         ticker: 'BOUV',    sector: 'Teknologi' },
-  { name: 'Itera ASA',                          ticker: 'ITERA',   sector: 'Teknologi' },
-  { name: 'Pexip Holding ASA',                  ticker: 'PEXIP',   sector: 'Teknologi' },
-  { name: 'AutoStore Holdings Ltd',             ticker: 'AUTO',    sector: 'Teknologi' },
-  { name: 'Meltwater NV',                       ticker: 'MELG',    sector: 'Teknologi' },
-  { name: 'Opera Ltd',                          ticker: 'OPERA',   sector: 'Teknologi' },
-  { name: 'Zalaris ASA',                        ticker: 'ZAL',     sector: 'Teknologi' },
-  { name: 'IDEX Biometrics ASA',                ticker: 'IDEX',    sector: 'Teknologi' },
-  { name: 'Funcom NV',                          ticker: 'FUNCOM',  sector: 'Teknologi' },
-  // Finans
-  { name: 'DNB Bank ASA',                       ticker: 'DNB',     sector: 'Finans' },
-  { name: 'Storebrand ASA',                     ticker: 'STB',     sector: 'Finans' },
-  { name: 'Gjensidige Forsikring ASA',          ticker: 'GJF',     sector: 'Finans' },
-  { name: 'SpareBank 1 SR-Bank ASA',            ticker: 'SRBANK',  sector: 'Finans' },
-  { name: 'SpareBank 1 SMN',                    ticker: 'MING',    sector: 'Finans' },
-  { name: 'SpareBank 1 Østlandet',              ticker: 'SPOL',    sector: 'Finans' },
-  { name: 'SpareBank 1 Nord-Norge',             ticker: 'NONG',    sector: 'Finans' },
-  { name: 'SpareBank 1 Ringerike Hadeland',     ticker: 'RING',    sector: 'Finans' },
-  { name: 'Sparebanken Vest',                   ticker: 'SVEG',    sector: 'Finans' },
-  { name: 'Sparebanken Møre',                   ticker: 'MORG',    sector: 'Finans' },
-  { name: 'Sparebanken Sør',                    ticker: 'SOON',    sector: 'Finans' },
-  { name: 'Protector Forsikring ASA',           ticker: 'PROT',    sector: 'Finans' },
-  { name: 'Instabank ASA',                      ticker: 'INSTA',   sector: 'Finans' },
-  { name: 'Komplett Bank ASA',                  ticker: 'KOMP',    sector: 'Finans' },
-  // Kommunikasjon / Media
-  { name: 'Telenor ASA',                        ticker: 'TEL',     sector: 'Kommunikasjon' },
-  { name: 'Schibsted ASA A-aksje',              ticker: 'SCHA',    sector: 'Kommunikasjon' },
-  { name: 'Schibsted ASA B-aksje',              ticker: 'SCHB',    sector: 'Kommunikasjon' },
-  { name: 'Adevinta ASA',                       ticker: 'ADE',     sector: 'Kommunikasjon' },
-  // Helse
-  { name: 'Photocure ASA',                      ticker: 'PHO',     sector: 'Helse' },
-  { name: 'Vistin Pharma ASA',                  ticker: 'VISTIN',  sector: 'Helse' },
-  { name: 'Nordic Nanovector ASA',              ticker: 'NANO',    sector: 'Helse' },
-  { name: 'Nykode Therapeutics ASA',            ticker: 'NYKD',    sector: 'Helse' },
-  { name: 'Photon Dynamics ASA',                ticker: 'PHDY',    sector: 'Helse' },
-  // Eiendom
-  { name: 'Entra ASA',                          ticker: 'ENTRA',   sector: 'Eiendom' },
-  { name: 'Norwegian Property ASA',             ticker: 'NPRO',    sector: 'Eiendom' },
-  { name: 'Selvaag Bolig ASA',                  ticker: 'SBO',     sector: 'Eiendom' },
-  { name: 'Solon Eiendom ASA',                  ticker: 'SOLON',   sector: 'Eiendom' },
+  { name: 'Frontline plc',                       ticker: 'FRO',     sector: 'Industri' },
+  { name: 'Golden Ocean Group Limited',          ticker: 'GOGL',    sector: 'Industri' },
+  { name: 'Hafnia Limited',                      ticker: 'HAFNI',   sector: 'Industri' },
+  { name: 'Höegh Autoliners ASA',                ticker: 'HAUTO',   sector: 'Industri' },
+  { name: 'Wallenius Wilhelmsen ASA',            ticker: 'WAWI',    sector: 'Industri' },
+  { name: 'Wilh. Wilhelmsen Holding ASA A',      ticker: 'WWI',     sector: 'Industri' },
+  { name: 'Wilh. Wilhelmsen Holding ASA B',      ticker: 'WWIB',    sector: 'Industri' },
+  { name: 'Stolt-Nielsen Limited',               ticker: 'SNI',     sector: 'Industri' },
+  { name: 'Klaveness Combination Carriers ASA',  ticker: 'KCC',     sector: 'Industri' },
+  { name: 'DHT Holdings Inc.',                   ticker: 'DHT',     sector: 'Industri' },
+  { name: 'Okeanis Eco Tankers Corp.',           ticker: 'OET',     sector: 'Industri' },
+  { name: 'MPC Container Ships ASA',             ticker: 'MPCC',    sector: 'Industri' },
+  { name: 'Odfjell SE A',                        ticker: 'ODF',     sector: 'Industri' },
+  { name: 'Odfjell SE B',                        ticker: 'ODFB',    sector: 'Industri' },
+  { name: '2020 Bulkers Ltd.',                   ticker: '2020',    sector: 'Industri' },
+  { name: 'Jinhui Shipping and Transportation Limited', ticker: 'JIN', sector: 'Industri' },
+  { name: 'Himalaya Shipping Ltd.',              ticker: 'HSHP',    sector: 'Industri' },
+  { name: 'Stainless Tankers ASA',               ticker: 'STST',    sector: 'Industri' },
+  { name: 'Western Bulk Chartering AS',          ticker: 'WEST',    sector: 'Industri' },
+  { name: 'ADS Maritime Holding Plc',            ticker: 'ADS',     sector: 'Industri' },
+  { name: 'Cmb.Tech NV',                         ticker: 'CMBTO',   sector: 'Industri' },
+  { name: 'Constellation Oil Services Holding S.A.', ticker: 'COSH', sector: 'Energi' },
+  { name: 'Havila Shipping ASA',                 ticker: 'HAVI',    sector: 'Industri' },
+  { name: 'Havila Kystruten AS',                 ticker: 'HKY',     sector: 'Industri' },
+  { name: 'S.D. Standard ETC Plc',              ticker: 'SDSD',    sector: 'Industri' },
+  // Forsvar & konglomerat
+  { name: 'Kongsberg Gruppen ASA',               ticker: 'KOG',     sector: 'Industri' },
+  { name: 'Aker ASA',                            ticker: 'AKER',    sector: 'Industri' },
+  { name: 'Tomra Systems ASA',                   ticker: 'TOM',     sector: 'Industri' },
+  { name: 'AF Gruppen ASA',                      ticker: 'AFG',     sector: 'Industri' },
+  { name: 'Veidekke ASA',                        ticker: 'VEI',     sector: 'Industri' },
+  { name: 'Norconsult ASA',                      ticker: 'NORCO',   sector: 'Industri' },
+  { name: 'Multiconsult ASA',                    ticker: 'MULTI',   sector: 'Industri' },
+  { name: 'ABL Group ASA',                       ticker: 'ABL',     sector: 'Industri' },
+  { name: 'Hexagon Composites ASA',              ticker: 'HEX',     sector: 'Industri' },
+  { name: 'Hexagon Purus ASA',                   ticker: 'HPUR',    sector: 'Industri' },
+  { name: 'Kitron ASA',                          ticker: 'KIT',     sector: 'Industri' },
+  { name: 'Cadeler A/S',                         ticker: 'CADLR',   sector: 'Industri' },
+  { name: 'Endúr ASA',                           ticker: 'ENDUR',   sector: 'Industri' },
+  { name: 'Elmera Group ASA',                    ticker: 'ELMRA',   sector: 'Industri' },
+  { name: 'NRC Group ASA',                       ticker: 'NRC',     sector: 'Industri' },
+  { name: 'Nekkar ASA',                          ticker: 'NKR',     sector: 'Industri' },
+  { name: 'HAV Group ASA',                       ticker: 'HAV',     sector: 'Industri' },
+  { name: 'Eqva ASA',                            ticker: 'EQVA',    sector: 'Industri' },
+  { name: 'Moreld ASA',                          ticker: 'MORLD',   sector: 'Industri' },
+  { name: 'Goodtech ASA',                        ticker: 'GOD',     sector: 'Industri' },
+  { name: 'Eidesvik Offshore ASA',               ticker: 'EIOF',    sector: 'Industri' },
+  { name: 'Borgestad ASA',                       ticker: 'BOR',     sector: 'Industri' },
+  { name: 'Byggma ASA',                          ticker: 'BMA',     sector: 'Industri' },
+  { name: 'Prosafe SE',                          ticker: 'PRS',     sector: 'Industri' },
+  { name: 'Vow ASA',                             ticker: 'VOW',     sector: 'Industri' },
+  { name: 'Fjord Defence Group ASA',             ticker: 'DFENS',   sector: 'Industri' },
+  { name: 'Kongsberg Automotive ASA',            ticker: 'KOA',     sector: 'Industri' },
+  { name: 'Inin Group AS',                       ticker: 'ININ',    sector: 'Industri' },
+  { name: 'Kaldvik AS',                          ticker: 'KLDVK',   sector: 'Industri' },
+  // --- Materialer ---
+  { name: 'Yara International ASA',              ticker: 'YAR',     sector: 'Materialer' },
+  { name: 'Norsk Hydro ASA',                     ticker: 'NHY',     sector: 'Materialer' },
+  { name: 'Elkem ASA',                           ticker: 'ELK',     sector: 'Materialer' },
+  { name: 'Borregaard ASA',                      ticker: 'BRG',     sector: 'Materialer' },
+  { name: 'REC Silicon ASA',                     ticker: 'RECSI',   sector: 'Materialer' },
+  { name: 'Elopak ASA',                          ticker: 'ELO',     sector: 'Materialer' },
+  { name: 'BEWI ASA',                            ticker: 'BEWI',    sector: 'Materialer' },
+  { name: 'Rana Gruber ASA',                     ticker: 'RANA',    sector: 'Materialer' },
+  { name: 'Norske Skog ASA',                     ticker: 'NSKOG',   sector: 'Materialer' },
+  { name: 'Tekna Holding ASA',                   ticker: 'TEKNA',   sector: 'Materialer' },
+  { name: 'Nordic Mining ASA',                   ticker: 'NOM',     sector: 'Materialer' },
+  { name: 'Måsøval AS',                          ticker: 'MAS',     sector: 'Materialer' },
+  { name: 'Green Minerals AS',                   ticker: 'GEM',     sector: 'Materialer' },
+  { name: 'Norsk Titanium AS',                   ticker: 'NTI',     sector: 'Materialer' },
+  { name: 'Akobo Minerals AB (publ)',            ticker: 'AKOBO',   sector: 'Materialer' },
+  // --- Teknologi ---
+  { name: 'Nordic Semiconductor ASA',            ticker: 'NOD',     sector: 'Teknologi' },
+  { name: 'Atea ASA',                            ticker: 'ATEA',    sector: 'Teknologi' },
+  { name: 'Bouvet ASA',                          ticker: 'BOUV',    sector: 'Teknologi' },
+  { name: 'Itera ASA',                           ticker: 'ITERA',   sector: 'Teknologi' },
+  { name: 'Pexip Holding ASA',                   ticker: 'PEXIP',   sector: 'Teknologi' },
+  { name: 'AutoStore Holdings Ltd.',             ticker: 'AUTO',    sector: 'Teknologi' },
+  { name: 'Zalaris ASA',                         ticker: 'ZAL',     sector: 'Teknologi' },
+  { name: 'IDEX Biometrics ASA',                 ticker: 'IDEX',    sector: 'Teknologi' },
+  { name: 'SoftwareOne Holding AG',              ticker: 'SWON',    sector: 'Teknologi' },
+  { name: 'TietoEVRY Oyj',                       ticker: 'TIETO',   sector: 'Teknologi' },
+  { name: 'Norbit ASA',                          ticker: 'NORBT',   sector: 'Teknologi' },
+  { name: 'Sentia ASA',                          ticker: 'SNTIA',   sector: 'Teknologi' },
+  { name: 'Napatech A/S',                        ticker: 'NAPA',    sector: 'Teknologi' },
+  { name: 'SmartCraft ASA',                      ticker: 'SMCRT',   sector: 'Teknologi' },
+  { name: 'Smartoptics Group ASA',               ticker: 'SMOP',    sector: 'Teknologi' },
+  { name: 'Appear ASA',                          ticker: 'APR',     sector: 'Teknologi' },
+  { name: 'Xplora Technologies AS',              ticker: 'XPLRA',   sector: 'Teknologi' },
+  { name: 'Nordhealth AS',                       ticker: 'NORDH',   sector: 'Teknologi' },
+  { name: 'Webstep ASA',                         ticker: 'WSTEP',   sector: 'Teknologi' },
+  { name: 'Techstep ASA',                        ticker: 'TECH',    sector: 'Teknologi' },
+  { name: 'StrongPoint ASA',                     ticker: 'STRO',    sector: 'Teknologi' },
+  { name: 'Elliptic Laboratories ASA',           ticker: 'ELABS',   sector: 'Teknologi' },
+  { name: 'poLight ASA',                         ticker: 'PLT',     sector: 'Teknologi' },
+  { name: 'Otello Corporation ASA',              ticker: 'OTEC',    sector: 'Teknologi' },
+  { name: 'Omda AS',                             ticker: 'OMDA',    sector: 'Teknologi' },
+  { name: 'Soiltech ASA',                        ticker: 'STECH',   sector: 'Teknologi' },
+  { name: 'Ensurge Micropower ASA',              ticker: 'ENSU',    sector: 'Teknologi' },
+  { name: 'Circio Holding ASA',                  ticker: 'CRNA',    sector: 'Teknologi' },
+  { name: 'Arribatec Group ASA',                 ticker: 'ARR',     sector: 'Teknologi' },
+  { name: 'Lokotech Group AS',                   ticker: 'LOKO',    sector: 'Teknologi' },
+  { name: 'Nordic Technology Group AS',          ticker: 'NTG',     sector: 'Teknologi' },
+  { name: 'Pryme N.V.',                          ticker: 'PRYME',   sector: 'Teknologi' },
+  { name: 'INIFY Laboratories AB',               ticker: 'INIFY',   sector: 'Teknologi' },
+  { name: 'ContextVision AB (publ)',             ticker: 'CONTX',   sector: 'Teknologi' },
+  { name: 'Huddlestock Fintech AS',              ticker: 'HUDL',    sector: 'Teknologi' },
+  { name: 'Ayfie International AS',              ticker: 'AIX',     sector: 'Teknologi' },
+  { name: 'Norwegian Block Exchange AS',         ticker: 'NBX',     sector: 'Teknologi' },
+  { name: 'Huddly AS',                           ticker: 'HDLY',    sector: 'Teknologi' },
+  { name: 'Cyviz AS',                            ticker: 'CYVIZ',   sector: 'Teknologi' },
+  { name: 'River Tech p.l.c.',                   ticker: 'RIVER',   sector: 'Teknologi' },
+  { name: 'NOS Nova AS',                         ticker: 'NOSN',    sector: 'Teknologi' },
+  { name: 'Ace Digital AS',                      ticker: 'ACED',    sector: 'Teknologi' },
+  { name: 'Indect AS',                           ticker: 'INDCT',   sector: 'Teknologi' },
+  { name: 'NEXT Biometrics Group ASA',           ticker: 'NEXT',    sector: 'Teknologi' },
+  { name: 'SoftOx Solutions AS',                 ticker: 'SOFTX',   sector: 'Teknologi' },
+  { name: '5th Planet Games A/S',               ticker: '5PG',     sector: 'Teknologi' },
+  { name: 'Vend Marketplaces ASA A',             ticker: 'VENDA',   sector: 'Kommunikasjon' },
+  { name: 'Vend Marketplaces ASA B',             ticker: 'VENDB',   sector: 'Kommunikasjon' },
+  { name: 'StandardCoin AS',                     ticker: 'SCOIN',   sector: 'Teknologi' },
+  { name: 'CodeLab Capital AS',                  ticker: 'CODE',    sector: 'Teknologi' },
+  // --- Kommunikasjon / Media ---
+  { name: 'Telenor ASA',                         ticker: 'TEL',     sector: 'Kommunikasjon' },
+  { name: 'LINK Mobility Group Holding ASA',     ticker: 'LINK',    sector: 'Kommunikasjon' },
+  { name: 'Polaris Media ASA',                   ticker: 'POL',     sector: 'Kommunikasjon' },
+  { name: 'Gyldendal ASA',                       ticker: 'GYL',     sector: 'Kommunikasjon' },
+  { name: 'Spir Group ASA',                      ticker: 'SPIR',    sector: 'Kommunikasjon' },
+  // --- Forbruksvarer (sjømat, dagligvare, handel) ---
+  { name: 'Mowi ASA',                            ticker: 'MOWI',    sector: 'Forbruksvarer' },
+  { name: 'SalMar ASA',                          ticker: 'SALM',    sector: 'Forbruksvarer' },
+  { name: 'Lerøy Seafood Group ASA',             ticker: 'LSG',     sector: 'Forbruksvarer' },
+  { name: 'Grieg Seafood ASA',                   ticker: 'GSF',     sector: 'Forbruksvarer' },
+  { name: 'Austevoll Seafood ASA',               ticker: 'AUSS',    sector: 'Forbruksvarer' },
+  { name: 'P/F Bakkafrost',                      ticker: 'BAKKA',   sector: 'Forbruksvarer' },
+  { name: 'Aker BioMarine ASA',                  ticker: 'AKBM',    sector: 'Forbruksvarer' },
+  { name: 'Salmon Evolution ASA',                ticker: 'SALME',   sector: 'Forbruksvarer' },
+  { name: 'Andfjord Salmon Group AS',            ticker: 'ANDF',    sector: 'Forbruksvarer' },
+  { name: 'Arctic Fish Holding AS',              ticker: 'AFISH',   sector: 'Forbruksvarer' },
+  { name: 'Nordic Halibut AS',                   ticker: 'NOHAL',   sector: 'Forbruksvarer' },
+  { name: 'Nordic Aqua Partners A/S',            ticker: 'NOAP',    sector: 'Forbruksvarer' },
+  { name: 'Gigante Salmon AS',                   ticker: 'GIGA',    sector: 'Forbruksvarer' },
+  { name: 'Icelandic Salmon AS',                 ticker: 'ISLAX',   sector: 'Forbruksvarer' },
+  { name: 'Norcod AS',                           ticker: 'NCOD',    sector: 'Forbruksvarer' },
+  { name: 'Barramundi Group Ltd.',               ticker: 'BARRA',   sector: 'Forbruksvarer' },
+  { name: 'Proximar Seafood AS',                 ticker: 'PROXI',   sector: 'Forbruksvarer' },
+  { name: 'Atlantic Sapphire ASA',               ticker: 'ASA',     sector: 'Forbruksvarer' },
+  { name: 'The Kingfish Company N.V.',           ticker: 'KING',    sector: 'Forbruksvarer' },
+  { name: 'Aqua Bio Technology ASA',             ticker: 'ABTEC',   sector: 'Forbruksvarer' },
+  { name: 'AKVA group ASA',                      ticker: 'AKVA',    sector: 'Forbruksvarer' },
+  { name: 'Orkla ASA',                           ticker: 'ORK',     sector: 'Forbruksvarer' },
+  { name: 'Europris ASA',                        ticker: 'EPR',     sector: 'Forbruksvarer' },
+  { name: 'Kid ASA',                             ticker: 'KID',     sector: 'Forbruksvarer' },
+  { name: 'Sats ASA',                            ticker: 'SATS',    sector: 'Forbruksvarer' },
+  { name: 'Komplett ASA',                        ticker: 'KOMPL',   sector: 'Forbruksvarer' },
+  { name: 'Lumi Gruppen AS',                     ticker: 'LUMI',    sector: 'Forbruksvarer' },
+  { name: 'Dellia Group ASA',                    ticker: 'DELIA',   sector: 'Forbruksvarer' },
+  { name: 'Elektroimportøren AS',                ticker: 'ELIMP',   sector: 'Forbruksvarer' },
+  { name: 'Matvareexpressen AS',                 ticker: 'MVE',     sector: 'Forbruksvarer' },
+  { name: 'Hunter Group ASA',                    ticker: 'HUNT',    sector: 'Forbruksvarer' },
+  // --- Helse ---
+  { name: 'Photocure ASA',                       ticker: 'PHO',     sector: 'Helse' },
+  { name: 'Vistin Pharma ASA',                   ticker: 'VISTN',   sector: 'Helse' },
+  { name: 'Nykode Therapeutics AS',              ticker: 'NYKD',    sector: 'Helse' },
+  { name: 'Medistim ASA',                        ticker: 'MEDI',    sector: 'Helse' },
+  { name: 'ArcticZymes Technologies ASA',        ticker: 'AZT',     sector: 'Helse' },
+  { name: 'Saga Pure ASA',                       ticker: 'SAGA',    sector: 'Helse' },
+  { name: 'Thor Medical ASA',                    ticker: 'TRMED',   sector: 'Helse' },
+  { name: 'Navamedic ASA',                       ticker: 'NAVA',    sector: 'Helse' },
+  { name: 'Lytix Biopharma AS',                  ticker: 'LYTIX',   sector: 'Helse' },
+  { name: 'Gentian Diagnostics ASA',             ticker: 'GENT',    sector: 'Helse' },
+  { name: 'Hofseth BioCare ASA',                 ticker: 'HBC',     sector: 'Helse' },
+  { name: 'Observe Medical ASA',                 ticker: 'OBSRV',   sector: 'Helse' },
+  { name: 'EXACT Therapeutics AS',               ticker: 'EXTX',    sector: 'Helse' },
+  { name: 'Arctic Bioscience AS',                ticker: 'ABS',     sector: 'Helse' },
+  { name: 'Lifecare ASA',                        ticker: 'LIFE',    sector: 'Helse' },
+  { name: 'PCI Biotech Holding ASA',             ticker: 'PCIB',    sector: 'Helse' },
+  // --- Finans ---
+  { name: 'DNB Bank ASA',                        ticker: 'DNB',     sector: 'Finans' },
+  { name: 'Storebrand ASA',                      ticker: 'STB',     sector: 'Finans' },
+  { name: 'Gjensidige Forsikring ASA',           ticker: 'GJF',     sector: 'Finans' },
+  { name: 'SpareBank 1 Sør-Norge ASA',           ticker: 'SB1NO',   sector: 'Finans' },
+  { name: 'SpareBank 1 SMN',                     ticker: 'MING',    sector: 'Finans' },
+  { name: 'SpareBank 1 Østlandet',               ticker: 'SPOL',    sector: 'Finans' },
+  { name: 'SpareBank 1 Nord-Norge',              ticker: 'NONG',    sector: 'Finans' },
+  { name: 'SpareBank 1 Ringerike Hadeland',      ticker: 'RING',    sector: 'Finans' },
+  { name: 'SpareBank 1 Østfold Akershus',        ticker: 'SOAG',    sector: 'Finans' },
+  { name: 'SpareBank 1 Nordmøre',                ticker: 'SNOR',    sector: 'Finans' },
+  { name: 'SpareBank 1 Helgeland',               ticker: 'HELG',    sector: 'Finans' },
+  { name: 'Sparebanken Norge',                   ticker: 'SVEG',    sector: 'Finans' },
+  { name: 'Sparebanken Møre',                    ticker: 'MORG',    sector: 'Finans' },
+  { name: 'Sparebank 68° Nord',                  ticker: 'SB68',    sector: 'Finans' },
+  { name: 'Protector Forsikring ASA',            ticker: 'PROT',    sector: 'Finans' },
+  { name: 'Pareto Bank ASA',                     ticker: 'PARB',    sector: 'Finans' },
+  { name: 'Instabank ASA',                       ticker: 'INSTA',   sector: 'Finans' },
+  { name: 'B2 Impact ASA',                       ticker: 'B2I',     sector: 'Finans' },
+  { name: 'Axactor ASA',                         ticker: 'ACR',     sector: 'Finans' },
+  { name: 'ABG Sundal Collier Holding ASA',      ticker: 'ABG',     sector: 'Finans' },
+  { name: 'Rogaland Sparebank',                  ticker: 'ROGS',    sector: 'Finans' },
+  { name: 'Skue Sparebank',                      ticker: 'SKUE',    sector: 'Finans' },
+  { name: 'Aurskog Sparebank',                   ticker: 'AURG',    sector: 'Finans' },
+  { name: 'Jæren Sparebank',                     ticker: 'JAREN',   sector: 'Finans' },
+  { name: 'Sparebanken Øst',                     ticker: 'SPOG',    sector: 'Finans' },
+  { name: 'Romerike Sparebank',                  ticker: 'ROMER',   sector: 'Finans' },
+  { name: 'Voss Veksel- og Landmandsbank ASA',   ticker: 'VVL',     sector: 'Finans' },
+  { name: 'Haugesund Sparebank',                 ticker: 'HGSB',    sector: 'Finans' },
+  { name: 'Bien Sparebank ASA',                  ticker: 'BIEN',    sector: 'Finans' },
+  { name: 'Melhus Sparebank',                    ticker: 'MELG',    sector: 'Finans' },
+  { name: 'Trøndelag Sparebank',                 ticker: 'TRSB',    sector: 'Finans' },
+  { name: 'Grong Sparebank',                     ticker: 'GRONG',   sector: 'Finans' },
+  { name: 'Aasen Sparebank',                     ticker: 'AASB',    sector: 'Finans' },
+  { name: 'Kraft Bank ASA',                      ticker: 'KRAB',    sector: 'Finans' },
+  { name: 'Nidaros Sparebank',                   ticker: 'NISB',    sector: 'Finans' },
+  { name: 'Høland og Setskog Sparebank',         ticker: 'HSPG',    sector: 'Finans' },
+  { name: 'Flekkefjord Sparebank',               ticker: 'FFSB',    sector: 'Finans' },
+  { name: 'Tinde Sparebank',                     ticker: 'TINDE',   sector: 'Finans' },
+  { name: 'Sogn Sparebank',                      ticker: 'SOGN',    sector: 'Finans' },
+  { name: 'Nordic Financials ASA',               ticker: 'NOFIN',   sector: 'Finans' },
+  // --- Eiendom ---
+  { name: 'Entra ASA',                           ticker: 'ENTRA',   sector: 'Eiendom' },
+  { name: 'Selvaag Bolig ASA',                   ticker: 'SBO',     sector: 'Eiendom' },
+  { name: 'Public Property Invest ASA',          ticker: 'PUBLI',   sector: 'Eiendom' },
+  { name: 'KMC Properties ASA',                  ticker: 'KMCP',    sector: 'Eiendom' },
+  { name: 'Magnora ASA',                         ticker: 'MGN',     sector: 'Eiendom' },
+  { name: 'Hermana Holding ASA',                 ticker: 'HERMA',   sector: 'Eiendom' },
+  { name: 'Baltic Sea Properties AS',            ticker: 'BALT',    sector: 'Eiendom' },
+  { name: 'Black Sea Property AS',               ticker: 'BSP',     sector: 'Eiendom' },
+  { name: 'RomReal Limited',                     ticker: 'ROM',     sector: 'Eiendom' },
 ];
 
 function getCompanies() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
 }
 function saveCompanies(cs) { localStorage.setItem(STORAGE_KEY, JSON.stringify(cs)); }
-function getCompany(id) { return getCompanies().find(c => c.id === id); }
+
+function migrateCompany(company) {
+  if (!company || !company.dcf) return company;
+  const dcf = company.dcf;
+
+  // historical — add missing P&L fields
+  const h = dcf.historical;
+  if (!h.cogs)      h.cogs      = ['','',''];
+  if (!h.sga)       h.sga       = ['','',''];
+  if (!h.rd)        h.rd        = ['','',''];
+  if (!h.otherOpex) h.otherOpex = ['','',''];
+
+  // assumptions — add missing P&L drivers
+  const a = dcf.assumptions;
+  if (!a.cogsPercent)      a.cogsPercent      = ['60','60','59','58','57','56','55','55','55','55'];
+  if (!a.sgaPercent)       a.sgaPercent       = ['10','10','10','10','10','10','10','10','10','10'];
+  if (!a.rdPercent)        a.rdPercent        = ['3','3','3','3','3','3','3','3','3','3'];
+  if (!a.otherOpexPercent) a.otherOpexPercent = ['2','2','2','2','2','2','2','2','2','2'];
+
+  // wacc — add new fields
+  const w = dcf.wacc;
+  if (w.sizePremium    === undefined) w.sizePremium    = '0';
+  if (w.alphaRisk      === undefined) w.alphaRisk      = '0';
+  if (w.equityMarketCap === undefined) w.equityMarketCap = '0';
+  if (w.totalDebt      === undefined) w.totalDebt      = '0';
+
+  // bridge — split netDebt into totalDebt + cash
+  const b = dcf.bridge;
+  if (b.totalDebt === undefined) b.totalDebt = b.netDebt || '0';
+  if (b.cash      === undefined) b.cash      = '0';
+
+  return company;
+}
+
+function getCompany(id) {
+  const company = getCompanies().find(c => c.id === id);
+  return company ? migrateCompany(company) : undefined;
+}
 
 // Folder storage
 const FOLDERS_KEY = 'finansiell-analyse-folders-v1';
@@ -169,28 +403,36 @@ function defaultDCF() {
   return {
     projectionYears: 5,
     historical: {
-      years: [y-3, y-2, y-1],
-      revenue:   ['','',''],
-      ebit:      ['','',''],
-      da:        ['','',''],
-      capex:     ['','',''],
-      nwcChange: ['','','']
+      years:      [y-3, y-2, y-1],
+      revenue:    ['','',''],
+      cogs:       ['','',''],
+      sga:        ['','',''],
+      rd:         ['','',''],
+      otherOpex:  ['','',''],
+      da:         ['','',''],
+      capex:      ['','',''],
+      nwcChange:  ['','','']
     },
     assumptions: {
       taxRate:           '25',
       revenueGrowth:     ['10','10','9','8','7','6','5','5','5','5'],
-      ebitMargin:        ['20','21','22','22','22','22','22','22','22','22'],
+      cogsPercent:       ['60','60','59','58','57','56','55','55','55','55'],
+      sgaPercent:        ['10','10','10','10','10','10','10','10','10','10'],
+      rdPercent:         ['3','3','3','3','3','3','3','3','3','3'],
+      otherOpexPercent:  ['2','2','2','2','2','2','2','2','2','2'],
       daPercent:         ['5','5','5','5','5','5','5','5','5','5'],
       capexPercent:      ['7','7','7','6','6','6','6','6','6','6'],
       nwcChangePercent:  ['2','2','2','2','2','2','2','2','2','2']
     },
     wacc: {
       riskFreeRate: '4.0', erp: '5.5', beta: '1.00',
+      sizePremium: '0', alphaRisk: '0',
       costOfDebt: '5.0', taxRate: '25.0',
+      equityMarketCap: '0', totalDebt: '0',
       debtWeight: '20', equityWeight: '80'
     },
     terminalValue: { method: 'gordon', terminalGrowthRate: '2.5', exitMultiple: '10' },
-    bridge: { netDebt: '0', minorities: '0', otherAdjustments: '0', sharesOutstanding: '1000', currentPrice: '0' }
+    bridge: { totalDebt: '0', cash: '0', minorities: '0', otherAdjustments: '0', sharesOutstanding: '1000', currentPrice: '0' }
   };
 }
 
@@ -218,37 +460,56 @@ function createCompany(data) {
 // ====================================================================
 
 function calcWACC(w) {
-  const rf = pf(w.riskFreeRate) / 100, erp = pf(w.erp) / 100, beta = pf(w.beta) || 1;
-  const kd = pf(w.costOfDebt) / 100, t = pf(w.taxRate) / 100;
-  const wd = pf(w.debtWeight) / 100, we = pf(w.equityWeight) / 100;
-  const ke = rf + beta * erp;
+  const rf  = pf(w.riskFreeRate) / 100, erp = pf(w.erp) / 100, beta = pf(w.beta) || 1;
+  const sp  = pf(w.sizePremium) / 100, ar = pf(w.alphaRisk) / 100;
+  const kd  = pf(w.costOfDebt) / 100, t  = pf(w.taxRate) / 100;
+  const emc = pf(w.equityMarketCap), td = pf(w.totalDebt);
+  let we, wd;
+  if (emc > 0 || td > 0) {
+    const total = emc + td;
+    we = total > 0 ? emc / total : 0.8;
+    wd = total > 0 ? td  / total : 0.2;
+  } else {
+    wd = pf(w.debtWeight) / 100;
+    we = pf(w.equityWeight) / 100;
+  }
+  const ke   = rf + beta * erp + sp + ar;
   const kdAt = kd * (1 - t);
-  return { ke, kdAt, wacc: ke * we + kdAt * wd };
+  return { ke, kdAt, wacc: ke * we + kdAt * wd, we, wd };
 }
 
 function calcProjectionRows(dcf, waccOvr) {
   const { assumptions: a, historical: h, projectionYears } = dcf;
-  const n = parseInt(projectionYears) || 5;
-  const tax = pf(a.taxRate) / 100;
+  const n    = parseInt(projectionYears) || 5;
+  const tax  = pf(a.taxRate) / 100;
   const wacc = waccOvr !== undefined ? waccOvr : calcWACC(dcf.wacc).wacc;
   const base = pf(h.revenue[2]) || 0;
-  let prev = base;
+  let prev   = base;
   const rows = [];
   for (let i = 0; i < n; i++) {
     const g     = pf(a.revenueGrowth[i]) / 100;
-    const m     = pf(a.ebitMargin[i]) / 100;
+    const cogsP = pf(a.cogsPercent[i]) / 100;
+    const sgaP  = pf(a.sgaPercent[i]) / 100;
+    const rdP   = pf(a.rdPercent[i]) / 100;
+    const othP  = pf(a.otherOpexPercent[i]) / 100;
     const daP   = pf(a.daPercent[i]) / 100;
     const capP  = pf(a.capexPercent[i]) / 100;
     const nwcP  = pf(a.nwcChangePercent[i]) / 100;
-    const rev   = prev * (1 + g);
-    const ebit  = rev * m;
-    const nopat = ebit * (1 - tax);
-    const da    = rev * daP;
-    const capex = rev * capP;
-    const nwc   = rev * nwcP;
-    const fcf   = nopat + da - capex - nwc;
-    const df    = 1 / Math.pow(1 + wacc, i + 1);
-    rows.push({ year: i+1, rev, ebit, nopat, da, capex, nwc, fcf, df, pvFcf: fcf*df, ebitda: ebit+da });
+    const rev    = prev * (1 + g);
+    const cogs   = rev * cogsP;
+    const grossP = rev - cogs;
+    const sga    = rev * sgaP;
+    const rd     = rev * rdP;
+    const oth    = rev * othP;
+    const ebitda = grossP - sga - rd - oth;
+    const da     = rev * daP;
+    const ebit   = ebitda - da;
+    const nopat  = ebit * (1 - tax);
+    const capex  = rev * capP;
+    const nwc    = rev * nwcP;
+    const fcf    = nopat + da - capex - nwc;
+    const df     = 1 / Math.pow(1 + wacc, i + 1);
+    rows.push({ year: i+1, rev, cogs, grossP, sga, rd, oth, ebitda, da, ebit, nopat, capex, nwc, fcf, df, pvFcf: fcf*df });
     prev = rev;
   }
   return rows;
@@ -271,17 +532,20 @@ function calcDCF(company, waccOvr, tgrOvr) {
   const pvTV = n > 0 ? tv / Math.pow(1 + wacc, n) : 0;
   const sumPv = rows.reduce((s, r) => s + r.pvFcf, 0);
   const ev = sumPv + pvTV;
-  const nd = pf(dcf.bridge.netDebt), min = pf(dcf.bridge.minorities), oth = pf(dcf.bridge.otherAdjustments);
-  const sh = pf(dcf.bridge.sharesOutstanding) || 1;
-  const eq = ev - nd - min + oth;
+  const b = dcf.bridge;
+  const totalDebt = b.totalDebt !== undefined ? pf(b.totalDebt) : pf(b.netDebt);
+  const cash = pf(b.cash) || 0;
+  const min = pf(b.minorities), oth = pf(b.otherAdjustments);
+  const sh = pf(b.sharesOutstanding) || 1;
+  const eq = ev - totalDebt + cash - min + oth;
   return { rows, tv, pvTV, sumPv, ev, eq, price: eq / sh };
 }
 
 function calcSensitivity(company) {
   const { wacc } = calcWACC(company.dcf.wacc);
   const tgr = pf(company.dcf.terminalValue.terminalGrowthRate) / 100;
-  const wRange = [-0.02, -0.01, 0, 0.01, 0.02].map(d => wacc + d);
-  const gRange = [-0.02, -0.01, 0, 0.01, 0.02].map(d => tgr + d);
+  const wRange = [-0.015, -0.01, -0.005, 0, 0.005, 0.01, 0.015].map(d => wacc + d);
+  const gRange = [-0.015, -0.01, -0.005, 0, 0.005, 0.01, 0.015].map(d => tgr + d);
   return wRange.map(w => gRange.map(g => ({ w, g, price: calcDCF(company, w, g).price })));
 }
 
@@ -528,7 +792,7 @@ function renderTab(company) {
 
 function renderDCF(company) {
   const dcf = company.dcf;
-  const { ke, kdAt, wacc } = calcWACC(dcf.wacc);
+  const { ke, kdAt, wacc, we, wd } = calcWACC(dcf.wacc);
   const res = calcDCF(company);
   const n = parseInt(dcf.projectionYears) || 5;
   const rows = res.rows;
@@ -536,14 +800,14 @@ function renderDCF(company) {
   const upside = currPrice > 0 ? (res.price - currPrice) / currPrice : null;
 
   return `
-    ${renderWACC(dcf, ke, kdAt, wacc)}
+    ${renderWACC(dcf, ke, kdAt, wacc, we, wd)}
     ${renderProjections(dcf, rows, n)}
     ${renderTerminalValue(dcf, res)}
     ${renderBridge(dcf, res, currPrice, upside)}
     ${renderSensitivity(company, wacc)}`;
 }
 
-function renderWACC(dcf, ke, kdAt, wacc) {
+function renderWACC(dcf, ke, kdAt, wacc, we, wd) {
   const w = dcf.wacc;
   return `
   <div class="section-card">
@@ -551,25 +815,44 @@ function renderWACC(dcf, ke, kdAt, wacc) {
       <span class="section-title">WACC-kalkulator</span>
     </div>
     <div class="section-body">
-      <div class="wacc-grid">
-        ${wField('Risikofri rente (%)', 'dcf.wacc.riskFreeRate', w.riskFreeRate)}
-        ${wField('Egenkapitalpremie (%)', 'dcf.wacc.erp', w.erp)}
-        ${wField('Beta', 'dcf.wacc.beta', w.beta)}
-        ${wField('Lånekostnad (%)', 'dcf.wacc.costOfDebt', w.costOfDebt)}
-        ${wField('Skattesats (%)', 'dcf.wacc.taxRate', w.taxRate)}
-        ${wField('Gjeldsandel (%)', 'dcf.wacc.debtWeight', w.debtWeight)}
-        ${wField('EK-andel (%)', 'dcf.wacc.equityWeight', w.equityWeight)}
+      <div class="wacc-columns">
+        <div class="wacc-col">
+          <div class="wacc-col-title">Egenkapitalkostnad (CAPM)</div>
+          ${wField('Risikofri rente (%)', 'dcf.wacc.riskFreeRate', w.riskFreeRate)}
+          ${wField('Egenkapitalpremie / ERP (%)', 'dcf.wacc.erp', w.erp)}
+          ${wField('Beta', 'dcf.wacc.beta', w.beta)}
+          ${wField('Størrelsesprermie (%)', 'dcf.wacc.sizePremium', w.sizePremium)}
+          ${wField('Selskapsspesifikk risiko (%)', 'dcf.wacc.alphaRisk', w.alphaRisk)}
+          <div class="wacc-computed-row">
+            <span class="wacc-result-label">Ke (beregnet)</span>
+            <span class="wacc-result-value" id="out-ke">${fP(ke)}</span>
+          </div>
+        </div>
+        <div class="wacc-col">
+          <div class="wacc-col-title">Gjeldskostnad</div>
+          ${wField('Lånekostnad pre-skatt (%)', 'dcf.wacc.costOfDebt', w.costOfDebt)}
+          ${wField('Skattesats (%)', 'dcf.wacc.taxRate', w.taxRate)}
+          <div class="wacc-computed-row">
+            <span class="wacc-result-label">Kd etter skatt (beregnet)</span>
+            <span class="wacc-result-value" id="out-kdat">${fP(kdAt)}</span>
+          </div>
+        </div>
+        <div class="wacc-col">
+          <div class="wacc-col-title">Kapitalstruktur</div>
+          ${wField('Markedsverdi EK (M)', 'dcf.wacc.equityMarketCap', w.equityMarketCap)}
+          ${wField('Total gjeld (M)', 'dcf.wacc.totalDebt', w.totalDebt)}
+          <div class="wacc-computed-row">
+            <span class="wacc-result-label">We (beregnet)</span>
+            <span class="wacc-result-value" id="out-we">${fP(we)}</span>
+          </div>
+          <div class="wacc-computed-row">
+            <span class="wacc-result-label">Wd (beregnet)</span>
+            <span class="wacc-result-value" id="out-wd">${fP(wd)}</span>
+          </div>
+        </div>
       </div>
       <div class="wacc-result-row">
-        <div class="wacc-result-item">
-          <span class="wacc-result-label">Egenkapitalkostnad (Ke)</span>
-          <span class="wacc-result-value" id="out-ke">${fP(ke)}</span>
-        </div>
-        <div class="wacc-result-item">
-          <span class="wacc-result-label">Etter skatt lånekostnad (Kd)</span>
-          <span class="wacc-result-value" id="out-kdat">${fP(kdAt)}</span>
-        </div>
-        <div class="wacc-result-item">
+        <div class="wacc-result-item" style="flex:1">
           <span class="wacc-result-label">WACC</span>
           <span class="wacc-result-value main" id="out-wacc">${fP(wacc)}</span>
         </div>
@@ -588,19 +871,31 @@ function wField(label, path, val) {
 function renderProjections(dcf, rows, n) {
   const h = dcf.historical;
   const a = dcf.assumptions;
-  const histRevs = h.revenue.map(pf);
+
+  // historical derived values
+  const histRevs  = h.revenue.map(pf);
+  const histCogs  = (h.cogs      || ['','','']).map(pf);
+  const histSga   = (h.sga       || ['','','']).map(pf);
+  const histRd    = (h.rd        || ['','','']).map(pf);
+  const histOth   = (h.otherOpex || ['','','']).map(pf);
+  const histDa    = h.da.map(pf);
+  const histCapex = h.capex.map(pf);
+  const histNwc   = h.nwcChange.map(pf);
+
+  const histGrossP = histRevs.map((r,i) => r - histCogs[i]);
+  const histEbitda = histGrossP.map((gp,i) => gp - histSga[i] - histRd[i] - histOth[i]);
+  const histEbit   = histEbitda.map((eb,i) => eb - histDa[i]);
+
   const histGrowth = [
     '—',
     histRevs[0] > 0 ? fP((histRevs[1]-histRevs[0])/histRevs[0]) : '—',
     histRevs[1] > 0 ? fP((histRevs[2]-histRevs[1])/histRevs[1]) : '—'
   ];
-  const histMargin = h.revenue.map((rv,i) => {
-    const r = pf(rv), e = pf(h.ebit[i]);
-    return r > 0 ? fP(e/r) : '—';
-  });
+  const hPct = (val, rev) => rev > 0 ? fP(val/rev) : '—';
 
-  const hCols = h.years.map((y,i) => ({ y, i }));
-  const pCols = rows;
+  const hCols    = h.years.map((y,i) => ({ y, i }));
+  const pCols    = rows;
+  const colCount = 1 + hCols.length + n;
 
   const head = `<thead><tr>
     <th>Linje</th>
@@ -608,12 +903,10 @@ function renderProjections(dcf, rows, n) {
     ${pCols.map(r => `<th class="col-proj">År ${r.year}</th>`).join('')}
   </tr></thead>`;
 
-  // Helper: historical input cell
-  const hIn = (field, idx) => `<td class="col-hist"><input class="tbl-input" type="number" step="any" data-path="dcf.historical.${field}.${idx}" value="${dcf.historical[field][idx]}"></td>`;
-  // Helper: projection assumption input cell
-  const pIn = (field, idx) => `<td class="col-proj"><input class="tbl-input" type="number" step="any" data-path="dcf.assumptions.${field}.${idx}" value="${a[field][idx]}"></td>`;
-  // Helper: computed cell
-  const cOut = (id, val) => `<td id="${id}">${val}</td>`;
+  const hIn  = (field, idx) => `<td class="col-hist"><input class="tbl-input" type="number" step="any" data-path="dcf.historical.${field}.${idx}" value="${(dcf.historical[field]||['','',''])[idx]}"></td>`;
+  const pIn  = (field, idx) => `<td class="col-proj"><input class="tbl-input" type="number" step="any" data-path="dcf.assumptions.${field}.${idx}" value="${a[field][idx]}"></td>`;
+  const cOut = (id, val)    => `<td id="${id}">${val}</td>`;
+  const sep  = ()           => `<tr class="row-separator"><td colspan="${colCount}"></td></tr>`;
 
   const body = `<tbody>
     <tr class="row-input"><td><b>Omsetningsvekst (%)</b></td>
@@ -624,29 +917,77 @@ function renderProjections(dcf, rows, n) {
       ${hCols.map(({i}) => hIn('revenue', i)).join('')}
       ${rows.map(r => cOut(`out-rev-${r.year}`, fN(r.rev))).join('')}
     </tr>
-    <tr class="row-input"><td class="row-label-indent">EBIT-margin (%)</td>
-      ${hCols.map(({i}) => `<td class="col-hist">${histMargin[i]}</td>`).join('')}
-      ${pCols.map((_,i) => pIn('ebitMargin', i)).join('')}
+    ${sep()}
+    <tr class="row-input"><td class="row-label-indent">COGS som % omsetning</td>
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histCogs[i], histRevs[i])}</td>`).join('')}
+      ${pCols.map((_,i) => pIn('cogsPercent', i)).join('')}
     </tr>
-    <tr class="row-computed"><td class="row-label-indent">EBIT</td>
-      ${hCols.map(({i}) => hIn('ebit', i)).join('')}
-      ${rows.map(r => cOut(`out-ebit-${r.year}`, fN(r.ebit))).join('')}
+    <tr class="row-computed"><td class="row-label-indent">COGS</td>
+      ${hCols.map(({i}) => hIn('cogs', i)).join('')}
+      ${rows.map(r => cOut(`out-cogs-${r.year}`, fN(r.cogs))).join('')}
     </tr>
-    <tr class="row-computed"><td class="row-label-indent">EBITDA</td>
-      ${hCols.map(({i}) => `<td class="col-hist">—</td>`).join('')}
+    <tr class="row-computed"><td class="row-label-indent"><b>Bruttofortjeneste</b></td>
+      ${hCols.map(({i}) => `<td class="col-hist">${fN(histGrossP[i])}</td>`).join('')}
+      ${rows.map(r => cOut(`out-grossP-${r.year}`, fN(r.grossP))).join('')}
+    </tr>
+    <tr class="row-computed"><td class="row-label-indent">Bruttomargin (%)</td>
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histGrossP[i], histRevs[i])}</td>`).join('')}
+      ${rows.map(r => cOut(`out-grossM-${r.year}`, r.rev > 0 ? fP(r.grossP/r.rev) : '—')).join('')}
+    </tr>
+    ${sep()}
+    <tr class="row-input"><td class="row-label-indent">SGA som % omsetning</td>
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histSga[i], histRevs[i])}</td>`).join('')}
+      ${pCols.map((_,i) => pIn('sgaPercent', i)).join('')}
+    </tr>
+    <tr class="row-computed"><td class="row-label-indent">SGA</td>
+      ${hCols.map(({i}) => hIn('sga', i)).join('')}
+      ${rows.map(r => cOut(`out-sga-${r.year}`, fN(r.sga))).join('')}
+    </tr>
+    <tr class="row-input"><td class="row-label-indent">R&amp;D som % omsetning</td>
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histRd[i], histRevs[i])}</td>`).join('')}
+      ${pCols.map((_,i) => pIn('rdPercent', i)).join('')}
+    </tr>
+    <tr class="row-computed"><td class="row-label-indent">R&amp;D</td>
+      ${hCols.map(({i}) => hIn('rd', i)).join('')}
+      ${rows.map(r => cOut(`out-rd-${r.year}`, fN(r.rd))).join('')}
+    </tr>
+    <tr class="row-input"><td class="row-label-indent">Andre driftskostnader som % omsetning</td>
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histOth[i], histRevs[i])}</td>`).join('')}
+      ${pCols.map((_,i) => pIn('otherOpexPercent', i)).join('')}
+    </tr>
+    <tr class="row-computed"><td class="row-label-indent">Andre driftskostnader</td>
+      ${hCols.map(({i}) => hIn('otherOpex', i)).join('')}
+      ${rows.map(r => cOut(`out-oth-${r.year}`, fN(r.oth))).join('')}
+    </tr>
+    ${sep()}
+    <tr class="row-computed"><td><b>EBITDA</b></td>
+      ${hCols.map(({i}) => `<td class="col-hist">${fN(histEbitda[i])}</td>`).join('')}
       ${rows.map(r => cOut(`out-ebitda-${r.year}`, fN(r.ebitda))).join('')}
     </tr>
-    <tr class="row-separator"><td colspan="${3+n}"></td></tr>
-    <tr class="row-input"><td class="row-label-indent">D&A som % omsetning</td>
-      ${hCols.map(() => `<td class="col-hist">—</td>`).join('')}
+    <tr class="row-computed"><td class="row-label-indent">EBITDA-margin (%)</td>
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histEbitda[i], histRevs[i])}</td>`).join('')}
+      ${rows.map(r => cOut(`out-ebitdam-${r.year}`, r.rev > 0 ? fP(r.ebitda/r.rev) : '—')).join('')}
+    </tr>
+    ${sep()}
+    <tr class="row-input"><td class="row-label-indent">D&amp;A som % omsetning</td>
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histDa[i], histRevs[i])}</td>`).join('')}
       ${pCols.map((_,i) => pIn('daPercent', i)).join('')}
     </tr>
-    <tr class="row-computed"><td class="row-label-indent">+ D&A</td>
+    <tr class="row-computed"><td class="row-label-indent">+ D&amp;A</td>
       ${hCols.map(({i}) => hIn('da', i)).join('')}
       ${rows.map(r => cOut(`out-da-${r.year}`, fN(r.da))).join('')}
     </tr>
+    <tr class="row-computed"><td><b>EBIT</b></td>
+      ${hCols.map(({i}) => `<td class="col-hist">${fN(histEbit[i])}</td>`).join('')}
+      ${rows.map(r => cOut(`out-ebit-${r.year}`, fN(r.ebit))).join('')}
+    </tr>
+    <tr class="row-computed"><td class="row-label-indent">EBIT-margin (%)</td>
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histEbit[i], histRevs[i])}</td>`).join('')}
+      ${rows.map(r => cOut(`out-ebitm-${r.year}`, r.rev > 0 ? fP(r.ebit/r.rev) : '—')).join('')}
+    </tr>
+    ${sep()}
     <tr class="row-input"><td class="row-label-indent">CapEx som % omsetning</td>
-      ${hCols.map(() => `<td class="col-hist">—</td>`).join('')}
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histCapex[i], histRevs[i])}</td>`).join('')}
       ${pCols.map((_,i) => pIn('capexPercent', i)).join('')}
     </tr>
     <tr class="row-computed"><td class="row-label-indent">– CapEx</td>
@@ -654,14 +995,14 @@ function renderProjections(dcf, rows, n) {
       ${rows.map(r => cOut(`out-capex-${r.year}`, fN(r.capex))).join('')}
     </tr>
     <tr class="row-input"><td class="row-label-indent">ΔNWC som % omsetning</td>
-      ${hCols.map(() => `<td class="col-hist">—</td>`).join('')}
+      ${hCols.map(({i}) => `<td class="col-hist">${hPct(histNwc[i], histRevs[i])}</td>`).join('')}
       ${pCols.map((_,i) => pIn('nwcChangePercent', i)).join('')}
     </tr>
     <tr class="row-computed"><td class="row-label-indent">– ΔNWC</td>
       ${hCols.map(({i}) => hIn('nwcChange', i)).join('')}
       ${rows.map(r => cOut(`out-nwc-${r.year}`, fN(r.nwc))).join('')}
     </tr>
-    <tr class="row-separator"><td colspan="${3+n}"></td></tr>
+    ${sep()}
     <tr class="row-input"><td class="row-label-indent">Skattesats (%)</td>
       ${hCols.map(() => `<td class="col-hist">—</td>`).join('')}
       <td colspan="${n}"><input class="tbl-input" type="number" step="any" data-path="dcf.assumptions.taxRate" value="${a.taxRate}" style="width:60px"> (gjelder alle år)</td>
@@ -670,7 +1011,7 @@ function renderProjections(dcf, rows, n) {
       ${hCols.map(() => `<td class="col-hist">—</td>`).join('')}
       ${rows.map(r => cOut(`out-nopat-${r.year}`, fN(r.nopat))).join('')}
     </tr>
-    <tr class="row-total"><td><b>Fri kontantstrøm (FCF)</b></td>
+    <tr class="row-total"><td><b>Fri kontantstrøm (UFCF)</b></td>
       ${hCols.map(() => `<td class="col-hist">—</td>`).join('')}
       ${rows.map(r => cOut(`out-fcf-${r.year}`, fN(r.fcf))).join('')}
     </tr>
@@ -751,20 +1092,24 @@ function renderBridge(dcf, res, currPrice, upside) {
   const upsideHtml = upside !== null
     ? `<span class="${upside >= 0 ? 'upside' : 'downside'}">${upside >= 0 ? '+' : ''}${fP(upside)} vs. kurs</span>`
     : '';
+  const totalDebtVal = b.totalDebt !== undefined ? b.totalDebt : (b.netDebt || '0');
+  const cashVal = b.cash || '0';
   return `
   <div class="section-card">
-    <div class="section-header"><span class="section-title">VerdsettelsesbroEV → Aksjeverd</span></div>
+    <div class="section-header"><span class="section-title">Verdsettelsesbro — EV → Aksjeverd</span></div>
     <div class="section-body">
       <div class="bridge-grid">
         <div>
           <table class="bridge-table">
             <tr><td class="bridge-label"><span class="bridge-sign"> </span>Enterprise Value</td>
                 <td><span id="out-ev">${fN(res.ev)}</span></td></tr>
-            <tr><td class="bridge-label"><span class="bridge-sign">–</span>Netto gjeld</td>
-                <td><input class="tbl-input" type="number" step="any" data-path="dcf.bridge.netDebt" value="${b.netDebt}" style="width:80px;text-align:right"></td></tr>
+            <tr><td class="bridge-label"><span class="bridge-sign">–</span>Total gjeld</td>
+                <td><input class="tbl-input" type="number" step="any" data-path="dcf.bridge.totalDebt" value="${totalDebtVal}" style="width:80px;text-align:right"></td></tr>
+            <tr><td class="bridge-label"><span class="bridge-sign">+</span>Kontanter</td>
+                <td><input class="tbl-input" type="number" step="any" data-path="dcf.bridge.cash" value="${cashVal}" style="width:80px;text-align:right"></td></tr>
             <tr><td class="bridge-label"><span class="bridge-sign">–</span>Minoritetsinteresser</td>
                 <td><input class="tbl-input" type="number" step="any" data-path="dcf.bridge.minorities" value="${b.minorities}" style="width:80px;text-align:right"></td></tr>
-            <tr><td class="bridge-label"><span class="bridge-sign">+</span>Andre justeringer</td>
+            <tr><td class="bridge-label"><span class="bridge-sign">+/–</span>Andre justeringer</td>
                 <td><input class="tbl-input" type="number" step="any" data-path="dcf.bridge.otherAdjustments" value="${b.otherAdjustments}" style="width:80px;text-align:right"></td></tr>
             <tr class="bridge-total"><td>= Egenkapitalverdi</td>
                 <td><span id="out-eq">${fN(res.eq)}</span></td></tr>
@@ -1177,12 +1522,110 @@ function initAutocomplete() {
   }, { once: false });
 }
 
+function initPeerAutocomplete() {
+  // Create floating dropdown once
+  let dropdown = document.getElementById('peer-ac-dropdown');
+  if (!dropdown) {
+    dropdown = document.createElement('div');
+    dropdown.id = 'peer-ac-dropdown';
+    dropdown.className = 'ac-dropdown peer-ac-dropdown';
+    dropdown.style.display = 'none';
+    document.body.appendChild(dropdown);
+  }
+
+  let activeInput = null;
+  let activeIdx   = -1;
+
+  function positionDropdown(input) {
+    const r = input.getBoundingClientRect();
+    dropdown.style.position = 'fixed';
+    dropdown.style.top      = (r.bottom + 4) + 'px';
+    dropdown.style.left     = r.left + 'px';
+    dropdown.style.width    = Math.max(r.width, 220) + 'px';
+    dropdown.style.right    = 'auto';
+  }
+
+  function showDropdown(items, input) {
+    if (!items.length) { dropdown.style.display = 'none'; return; }
+    activeIdx = -1;
+    positionDropdown(input);
+    dropdown.innerHTML = items.map((c, i) => `
+      <div class="ac-item" data-index="${i}" data-name="${esc(c.name)}" data-ticker="${esc(c.ticker)}">
+        <span class="ac-ticker">${esc(c.ticker)}</span>
+        <span class="ac-name">${esc(c.name)}</span>
+      </div>`).join('');
+    dropdown.style.display = 'block';
+  }
+
+  function hideDropdown() {
+    dropdown.style.display = 'none';
+    activeIdx   = -1;
+    activeInput = null;
+  }
+
+  function selectItem(el) {
+    if (!activeInput) return;
+    activeInput.value = el.dataset.name;
+    activeInput.dispatchEvent(new Event('input', { bubbles: true }));
+    hideDropdown();
+  }
+
+  // Input event — filter and show matches
+  document.addEventListener('input', e => {
+    const inp = e.target;
+    if (!inp.matches('input[data-path^="multiples.peers."][data-path$=".name"]')) return;
+    activeInput = inp;
+    const q = inp.value.trim().toLowerCase();
+    if (q.length < 1) { dropdown.style.display = 'none'; return; }
+    const matches = OSLO_BORS_DB.filter(c =>
+      c.name.toLowerCase().includes(q) || c.ticker.toLowerCase().includes(q)
+    ).slice(0, 10);
+    showDropdown(matches, inp);
+  }, true);
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (dropdown.style.display === 'none') return;
+    const items = dropdown.querySelectorAll('.ac-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('ac-item-active', i === activeIdx));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('ac-item-active', i === activeIdx));
+    } else if (e.key === 'Enter' && activeIdx >= 0) {
+      e.preventDefault();
+      selectItem(items[activeIdx]);
+    } else if (e.key === 'Escape') {
+      hideDropdown();
+    }
+  }, true);
+
+  // Click to select
+  dropdown.addEventListener('mousedown', e => {
+    const item = e.target.closest('.ac-item');
+    if (item) { e.preventDefault(); selectItem(item); }
+  });
+
+  // Hide when clicking outside
+  document.addEventListener('mousedown', e => {
+    if (dropdown.style.display === 'none') return;
+    if (!dropdown.contains(e.target) && e.target !== activeInput) hideDropdown();
+  });
+}
+
+// Init peer autocomplete once on page load (uses event delegation — works for dynamically rendered rows)
+document.addEventListener('DOMContentLoaded', initPeerAutocomplete);
+
 // ====================================================================
 // 12. UPDATE HELPERS (partial DOM update without full re-render)
 // ====================================================================
 
 function refreshDCFOutputs(company) {
-  const { ke, kdAt, wacc } = calcWACC(company.dcf.wacc);
+  const { ke, kdAt, wacc, we, wd } = calcWACC(company.dcf.wacc);
   const res = calcDCF(company);
   const { rows } = res;
   const currPrice = pf(company.dcf.bridge.currentPrice);
@@ -1190,12 +1633,22 @@ function refreshDCFOutputs(company) {
   set('out-ke', fP(ke));
   set('out-kdat', fP(kdAt));
   set('out-wacc', fP(wacc));
+  set('out-we', fP(we));
+  set('out-wd', fP(wd));
 
   rows.forEach(r => {
     set(`out-rev-${r.year}`, fN(r.rev));
-    set(`out-ebit-${r.year}`, fN(r.ebit));
+    set(`out-cogs-${r.year}`, fN(r.cogs));
+    set(`out-grossP-${r.year}`, fN(r.grossP));
+    set(`out-grossM-${r.year}`, r.rev > 0 ? fP(r.grossP/r.rev) : '—');
+    set(`out-sga-${r.year}`, fN(r.sga));
+    set(`out-rd-${r.year}`, fN(r.rd));
+    set(`out-oth-${r.year}`, fN(r.oth));
     set(`out-ebitda-${r.year}`, fN(r.ebitda));
+    set(`out-ebitdam-${r.year}`, r.rev > 0 ? fP(r.ebitda/r.rev) : '—');
     set(`out-da-${r.year}`, fN(r.da));
+    set(`out-ebit-${r.year}`, fN(r.ebit));
+    set(`out-ebitm-${r.year}`, r.rev > 0 ? fP(r.ebit/r.rev) : '—');
     set(`out-capex-${r.year}`, fN(r.capex));
     set(`out-nwc-${r.year}`, fN(r.nwc));
     set(`out-nopat-${r.year}`, fN(r.nopat));
